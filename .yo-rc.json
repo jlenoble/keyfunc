@@ -1,0 +1,13 @@
+{
+  "generator-wupjs": {
+    "module": "keyfunc",
+    "description": "Creates custom functions returning custom keys for any set of args",
+    "author": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com",
+    "github": "jlenoble",
+    "license": "MIT",
+    "transpile": "es2015",
+    "addons": [],
+    "Class": "Keyfunc"
+  }
+}
