@@ -1,9 +1,19 @@
 import signature from 'sig';
 
+function isValidSingleArg(arg) {
+  return ((typeof arg === 'string') && (arg === 'strict' ||
+    arg === 'loose')) || ((typeof arg === 'object') && (arg.idProperty ||
+    arg.stem));
+}
+
 function strictKeyFunc(options = {}) {
   if (options.idProperty) {
     return (function(idProperty) {
       return function strictKey(inst) {
+        if (!inst[idProperty]) {
+          throw new ReferenceError(
+            `No property '${idProperty}' defined for ${JSON.stringify(inst)}`);
+        }
         return inst[idProperty];
       };
     })(options.idProperty);
@@ -13,6 +23,10 @@ function strictKeyFunc(options = {}) {
     var counter = 0;
     const map = new Map();
     return function strictKey(inst) {
+      switch (typeof inst) {
+        case 'number':
+        case 'string': return stem + signature(inst);
+      }
       var key = map.get(inst);
       if (!key) {
         counter++;
@@ -24,32 +38,30 @@ function strictKeyFunc(options = {}) {
   })(options.stem ? options.stem : 'key');
 }
 
-function looseKeyFunc(options = {}) {
-  if (options.idProperty) {
-    return (function(idProperty) {
-      return function strictKey(inst) {
-        return inst[idProperty];
-      };
-    })(options.idProperty);
-  }
-
+function looseKeyFunc() {
   return signature;
 }
 
 export default function keyFunc(...args) {
 
   const func = option => {
-    if (option === 'strict' || option.strict) {
+    if (option === 'strict') {
       return strictKeyFunc(option);
-    } else if (option === 'loose' || option.loose) {
+    } else if (option === 'loose') {
       return looseKeyFunc(option);
+    } else if (option.idProperty || option.stem) {
+      return strictKeyFunc(option);
     } else {
       return keyFunc(option);
     }
   };
 
   if (args.length === 1) {
-    return func(args[0]);
+    let arg = args[0];
+    if (!isValidSingleArg(arg)) {
+      throw new TypeError(`Unhandled option ${arg}`);
+    }
+    return func(arg);
   }
 
   return (function(keyFuncs) {
