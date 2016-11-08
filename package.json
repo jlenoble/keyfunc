@@ -40,6 +40,7 @@
     "plumb-gulp": "^0.1.0"
   },
   "dependencies": {
+    "is-string": "^1.0.4",
     "sig": "^1.0.0"
   }
 }

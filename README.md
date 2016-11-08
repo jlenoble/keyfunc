@@ -22,7 +22,7 @@ key({name: 'Otto'}) === 'name-Otto'; // true
 
 * 'strict': Litteral objects and arrays generate different keys each time.
 * 'loose': Litteral objects and and arrays generate the same keys each time.
-* {idProperty: [String]}: Use 'idProperty' property of object to generate key instead of the whole object. This option forces to ignore any other property at the same level of 'idProperty'. Use with care as you will match objects that share nothing but their ID.
+* {idProperty: [String]}: Use 'idProperty' property of object to generate key instead of the whole object. This option forces to ignore any other property at the same level of 'idProperty'. Use with caution as you will match objects that share nothing but their ID.
 * {stem: [String]}: Prepend the value of 'stem' to every key.
 * {type: [Type || String]}: Hint to optimize generated key functions. If not provided, type checks will be made on every call.
 
