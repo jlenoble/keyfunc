@@ -1,31 +1,72 @@
 import signature from 'sig';
 
-function isValidSingleArg(arg) {
-  return ((typeof arg === 'string') && (arg === 'strict' ||
-    arg === 'loose')) || ((typeof arg === 'object') && (arg.idProperty ||
-    arg.stem));
-}
-
 function strictKeyFunc(options = {}) {
   options = Object.assign({stem: 'key'}, options);
+  var key;
 
-  const key = (function(stem) {
-    var counter = 0;
-    const map = new WeakMap();
-    return function strictKey(inst) {
-      switch (typeof inst) {
-        case 'number':
-        case 'string': return stem + signature(inst);
-      }
-      var key = map.get(inst);
-      if (!key) {
-        counter++;
-        key = stem + counter;
-        map.set(inst, key);
-      }
-      return key;
-    };
-  })(options.stem);
+  if (options.type) {
+    let type = options.type;
+    if (type === String) {
+      type = 'string';
+    } else if (type === Number) {
+      type = 'number';
+    } else if (type === Object) {
+      type = 'object';
+    } else if (type === Array) {
+      type = 'array';
+    }
+
+    if (type === 'string' || type === 'number') {
+      key = (function(stem, type) {
+        return inst => {
+          if (typeof inst !== type) {
+            throw new TypeError(
+              `Expected type ${type} or Number for ${JSON.stringify(inst)}`);
+          }
+          return stem + inst;
+        };
+      })(options.stem, type);
+    } else {
+      key = (function(stem, type) {
+        var counter = 0;
+        const map = new WeakMap();
+        return inst => {
+          let isArray = Array.isArray(inst);
+          let thrw = ((type !== 'object' || isArray) &&
+            !(type === 'array' && isArray));
+          if (thrw) {
+            throw new TypeError(
+              `Expected type ${type} for ${JSON.stringify(inst)}`);
+          }
+          var key = map.get(inst);
+          if (!key) {
+            counter++;
+            key = stem + counter;
+            map.set(inst, key);
+          }
+          return key;
+        };
+      })(options.stem, type);
+    }
+  } else {
+    key = (function(stem) {
+      var counter = 0;
+      const map = new WeakMap();
+      return inst => {
+        switch (typeof inst) {
+          case 'number':
+          case 'string': return stem + signature(inst);
+        }
+        var key = map.get(inst);
+        if (!key) {
+          counter++;
+          key = stem + counter;
+          map.set(inst, key);
+        }
+        return key;
+      };
+    })(options.stem);
+  }
 
   if (options.idProperty) {
     return (function(idProperty, key) {
@@ -73,18 +114,8 @@ export default function keyFunc(...args) {
       return looseKeyFunc(option);
     } else if (option.idProperty || option.stem) {
       return option.loose ? looseKeyFunc(option) : strictKeyFunc(option);
-    } else {
-      return keyFunc(option);
     }
   };
-
-  if (args.length === 1) {
-    let arg = args[0];
-    if (!isValidSingleArg(arg)) {
-      throw new TypeError(`Unhandled option ${arg}`);
-    }
-    return func(arg);
-  }
 
   return (function(keyFuncs) {
     return function(...args) {

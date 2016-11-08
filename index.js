@@ -3,6 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.default = keyFunc;
 
 var _sig = require('sig');
@@ -14,41 +17,108 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function strictKeyFunc() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  if (options.idProperty) {
-    return function (idProperty) {
-      return function strictKey(inst) {
-        return inst[idProperty];
+  options = Object.assign({ stem: 'key' }, options);
+  var key;
+
+  if (options.type) {
+    var type = options.type;
+    if (type === String) {
+      type = 'string';
+    } else if (type === Number) {
+      type = 'number';
+    } else if (type === Object) {
+      type = 'object';
+    } else if (type === Array) {
+      type = 'array';
+    }
+
+    if (type === 'string' || type === 'number') {
+      key = function (stem, type) {
+        return function (inst) {
+          if ((typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) !== type) {
+            throw new TypeError('Expected type ' + type + ' or Number for ' + JSON.stringify(inst));
+          }
+          return stem + inst;
+        };
+      }(options.stem, type);
+    } else {
+      key = function (stem, type) {
+        var counter = 0;
+        var map = new WeakMap();
+        return function (inst) {
+          var isArray = Array.isArray(inst);
+          var thrw = (type !== 'object' || isArray) && !(type === 'array' && isArray);
+          if (thrw) {
+            throw new TypeError('Expected type ' + type + ' for ' + JSON.stringify(inst));
+          }
+          var key = map.get(inst);
+          if (!key) {
+            counter++;
+            key = stem + counter;
+            map.set(inst, key);
+          }
+          return key;
+        };
+      }(options.stem, type);
+    }
+  } else {
+    key = function (stem) {
+      var counter = 0;
+      var map = new WeakMap();
+      return function (inst) {
+        switch (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) {
+          case 'number':
+          case 'string':
+            return stem + (0, _sig2.default)(inst);
+        }
+        var key = map.get(inst);
+        if (!key) {
+          counter++;
+          key = stem + counter;
+          map.set(inst, key);
+        }
+        return key;
       };
-    }(options.idProperty);
+    }(options.stem);
   }
 
-  return function (stem) {
-    var counter = 0;
-    var map = new Map();
-    return function strictKey(inst) {
-      var key = map.get(inst);
-      if (!key) {
-        counter++;
-        key = stem + counter;
-        map.set(inst, key);
-      }
-      return key;
-    };
-  }(options.stem ? options.stem : 'key');
+  if (options.idProperty) {
+    return function (idProperty, key) {
+      return function (inst) {
+        if (!inst[idProperty]) {
+          throw new ReferenceError('No property \'' + idProperty + '\' defined for ' + JSON.stringify(inst));
+        }
+        return key(inst[idProperty]);
+      };
+    }(options.idProperty, key);
+  }
+
+  return key;
 }
 
 function looseKeyFunc() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+  options = Object.assign({ stem: 'key' }, options);
+
+  var key = function (stem) {
+    return function (inst) {
+      return stem + (0, _sig2.default)(inst);
+    };
+  }(options.stem);
+
   if (options.idProperty) {
-    return function (idProperty) {
-      return function strictKey(inst) {
-        return inst[idProperty];
+    return function (idProperty, key) {
+      return function (inst) {
+        if (!inst[idProperty]) {
+          throw new ReferenceError('No property \'' + idProperty + '\' defined for ' + JSON.stringify(inst));
+        }
+        return key(inst[idProperty]);
       };
-    }(options.idProperty);
+    }(options.idProperty, key);
   }
 
-  return _sig2.default;
+  return key;
 }
 
 function keyFunc() {
@@ -57,18 +127,14 @@ function keyFunc() {
   }
 
   var func = function func(option) {
-    if (option === 'strict' || option.strict) {
+    if (option === 'strict') {
       return strictKeyFunc(option);
-    } else if (option === 'loose' || option.loose) {
+    } else if (option === 'loose') {
       return looseKeyFunc(option);
-    } else {
-      return keyFunc(option);
+    } else if (option.idProperty || option.stem) {
+      return option.loose ? looseKeyFunc(option) : strictKeyFunc(option);
     }
   };
-
-  if (args.length === 1) {
-    return func(args[0]);
-  }
 
   return function (keyFuncs) {
     return function () {
