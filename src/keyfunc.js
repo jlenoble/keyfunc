@@ -7,21 +7,11 @@ function isValidSingleArg(arg) {
 }
 
 function strictKeyFunc(options = {}) {
-  if (options.idProperty) {
-    return (function(idProperty) {
-      return function strictKey(inst) {
-        if (!inst[idProperty]) {
-          throw new ReferenceError(
-            `No property '${idProperty}' defined for ${JSON.stringify(inst)}`);
-        }
-        return inst[idProperty];
-      };
-    })(options.idProperty);
-  }
+  options = Object.assign({stem: 'key'}, options);
 
-  return (function(stem) {
+  const key = (function(stem) {
     var counter = 0;
-    const map = new Map();
+    const map = new WeakMap();
     return function strictKey(inst) {
       switch (typeof inst) {
         case 'number':
@@ -35,11 +25,43 @@ function strictKeyFunc(options = {}) {
       }
       return key;
     };
-  })(options.stem ? options.stem : 'key');
+  })(options.stem);
+
+  if (options.idProperty) {
+    return (function(idProperty, key) {
+      return inst => {
+        if (!inst[idProperty]) {
+          throw new ReferenceError(
+            `No property '${idProperty}' defined for ${JSON.stringify(inst)}`);
+        }
+        return key(inst[idProperty]);
+      };
+    })(options.idProperty, key);
+  }
+
+  return key;
 }
 
-function looseKeyFunc() {
-  return signature;
+function looseKeyFunc(options = {}) {
+  options = Object.assign({stem: 'key'}, options);
+
+  const key = (function(stem) {
+    return inst => stem + signature(inst);
+  })(options.stem);
+
+  if (options.idProperty) {
+    return (function(idProperty, key) {
+      return inst => {
+        if (!inst[idProperty]) {
+          throw new ReferenceError(
+            `No property '${idProperty}' defined for ${JSON.stringify(inst)}`);
+        }
+        return key(inst[idProperty]);
+      };
+    })(options.idProperty, key);
+  }
+
+  return key;
 }
 
 export default function keyFunc(...args) {
@@ -50,7 +72,7 @@ export default function keyFunc(...args) {
     } else if (option === 'loose') {
       return looseKeyFunc(option);
     } else if (option.idProperty || option.stem) {
-      return strictKeyFunc(option);
+      return option.loose ? looseKeyFunc(option) : strictKeyFunc(option);
     } else {
       return keyFunc(option);
     }
