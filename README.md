@@ -9,31 +9,22 @@ Strict equality is too strong a condition when dealing with flyweights and the l
 import keyFunc from 'keyfunc';
 
 const key = keyFunc({
-  idProperty: 'name',
-  stem: 'name-',
-  type: String
+  property: 'name',
+  stem: 'name-'
 });
 
-key({name: 'Otto'}) === key({name: 'Otto'}); // true
-key({name: 'Otto'}) === 'name-Otto'; // true
+key({name: 'Otto'}) === key({name: 'Otto'});
+key({name: 'Otto'}) === 'name-Otto';
 ```
-
-### Options
-
-* 'strict': Litteral objects and arrays generate different keys each time.
-* 'loose': Litteral objects and and arrays generate the same keys each time.
-* {idProperty: [String]}: Use 'idProperty' property of object to generate key instead of the whole object. This option forces to ignore any other property at the same level of 'idProperty'. Use with caution as you will match objects that share nothing but their ID.
-* {stem: [String]}: Prepend the value of 'stem' to every key.
-* {type: [Type || String]}: Hint to optimize generated key functions. If not provided, type checks will be made on every call.
 
 ## Advanced usage
 
-```keyFunc``` can take more than one option argument. The generated key function will then handle as many passed arguments, so that you can generate keys for sets of independent objects.
+```keyFunc``` can take more than one argument. The generated key function will handle all passed arguments, so that you can generate keys for sets of independent objects.
 
 ```js
 import keyFunc from 'keyfunc';
 
-const key = keyFunc('strict', {idProperty: 'id'}, 'loose');
+const key = keyFunc('object', {property: 'id'}, 'literal');
 
 class Class {constructor(){}}
 const c = new Class();
@@ -48,7 +39,7 @@ key(c, obj, {color: 'blue'}) !== key(console, obj, {color: 'blue'});
 
 ## CAVEAT
 
-Object resulting in same keys may not be equal in all respect if you use the option 'idProperty'. Be clear about your intent, or keep to the other options.
+Object resulting in same keys may not be equal in all respect if you use the option 'property'. Be clear about your intent, or keep to other options.
 
 ## License
 
