@@ -19,7 +19,7 @@ but it was: ${JSON.stringify(property)}`);
           `Can't generate key for object with no property '${property}'`);
       }
       return stem + signature(obj[property]);
-    }
+    };
   })(property, stem);
 
 };

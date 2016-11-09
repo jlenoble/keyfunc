@@ -10,7 +10,7 @@ export default function strictFunc(stem) {
   return (stem => {
     return obj => {
       return stem + signature(obj);
-    }
+    };
   })(stem);
 
 };

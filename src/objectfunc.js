@@ -28,7 +28,7 @@ export default function objectFunc(type, stem) {
       break;
 
     default:
-     throw new TypeError(`Keys can't be created for type ${type}`);
+      throw new TypeError(`Keys can't be created for type ${type}`);
 
   }
 

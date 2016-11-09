@@ -27,7 +27,7 @@ but argument was: ${JSON.stringify(obj)}`);
       }
 
       return key;
-    }
+    };
   })(stem);
 
 };
