@@ -23,8 +23,10 @@ but argument was: "title"`);
     expect(key([1])).to.equal('4');
     expect(key([1])).to.equal('5');
 
-    expect(key(console, console)).to.equal('1_1');
-    expect(key(console, console, {id: 1})).to.equal('1_1_6');
+    expect(() => key(console, console)).to.throw(Error,
+      `Too many arguments, can't generate key`);
+    expect(() => key(console, console, {id: 1})).to.throw(Error,
+      `Too many arguments, can't generate key`);
   });
 
   it(`Calling keyFunc('literal')` , function() {
@@ -36,8 +38,8 @@ but argument was: "title"`);
     expect(key(1)).to.equal(signature(1));
     expect(key('title')).to.equal(signature('title'));
 
-    expect(key(1, 'title', {id: 1})).to.equal(signature(1) + '_' +
-      signature('title') + '_' + signature({id: 1}));
+    expect(() => key(1, 'title', {id: 1})).to.throw(Error,
+      `Too many arguments, can't generate key`);
   });
 
   it(`Calling keyFunc({property: 'id'})` , function() {
@@ -51,8 +53,8 @@ but argument was: "title"`);
     expect(() => key(console)).to.throw(
       `Can't generate key for object with no property 'id'`);
 
-    expect(key({id: 1}, {id: 2}, {id: 'title'})).to.equal(signature(1) + '_' +
-      signature(2) + '_' + signature('title'));
+    expect(() => key({id: 1}, {id: 2}, {id: 'title'})).to.throw(Error,
+      `Too many arguments, can't generate key`);
   });
 
   it(`Calling keyFunc('object', 'literal')` , function() {
@@ -63,8 +65,8 @@ but argument was: "title"`);
     expect(() => key(1, 2)).to.throw(
       'Function can only generate keys for objects,\nbut argument was: 1');
 
-    expect(key(console, 'log', {color: 'red'})).to.equal('1_' +
-      signature('log') + '_' + signature({color: 'red'}));
+    expect(() => key(console, 'log', {color: 'red'})).to.throw(Error,
+      `Too many arguments, can't generate key`);
   });
 
   it(`Calling keyFunc({stem: 'id'}, {property: 'id'})` , function() {
@@ -75,8 +77,8 @@ but argument was: "title"`);
     expect(() => key(1, 2)).to.throw(
       'Function can only generate keys for objects,\nbut argument was: 1');
 
-    expect(key(console, {id: 1}, {id: 'red'})).to.equal('id1_' +
-      signature(1) + '_' + signature('red'));
+    expect(() => key(console, {id: 1}, {id: 'red'})).to.throw(Error,
+      `Too many arguments, can't generate key`);
   });
 
 });
