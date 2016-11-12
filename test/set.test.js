@@ -1,12 +1,12 @@
 import {expect} from 'chai';
 import signature from 'sig';
-import arrayFunc from '../src/arrayfunc';
+import setFunc from '../src/setfunc';
 
-describe(`Testing arrayFunc`, function() {
+describe(`Testing setFunc`, function() {
 
-  it(`Calling arrayFunc()`,
+  it(`Calling setFunc()`,
   function() {
-    const key = arrayFunc();
+    const key = setFunc();
 
     expect(key([console])).to.equal(key([console]));
     expect(key([console, console])).to.equal(key([console, console]));
@@ -20,14 +20,14 @@ describe(`Testing arrayFunc`, function() {
     const obj = {id: 1};
     expect(key([console, obj])).to.equal(key([console, obj]));
     expect(key([console, obj])).not.to.equal(key([console, {id: 1}]));
-    expect(key([console, obj])).not.to.equal(key([obj, console]));
 
+    expect(key([console, obj])).to.equal(key([obj, console]));
     expect(key([console, obj])).to.equal(signature(['1', '2']));
   });
 
-  it(`Calling arrayFunc('key-')`,
+  it(`Calling setFunc('key-')`,
   function() {
-    const key = arrayFunc('key-');
+    const key = setFunc('key-');
 
     expect(key([console])).to.equal(key([console]));
     expect(key([console, console])).to.equal(key([console, console]));
@@ -41,8 +41,8 @@ describe(`Testing arrayFunc`, function() {
     const obj = {id: 1};
     expect(key([console, obj])).to.equal(key([console, obj]));
     expect(key([console, obj])).not.to.equal(key([console, {id: 1}]));
-    expect(key([console, obj])).not.to.equal(key([obj, console]));
 
+    expect(key([console, obj])).to.equal(key([obj, console]));
     expect(key([console, obj])).to.equal(signature(['key-1', 'key-2']));
   });
 

@@ -86,6 +86,16 @@ but argument was: "title"`);
 
     const obj = {id: 1};
     expect(key([console, obj])).to.equal(key([console, obj]));
+    expect(key([console, obj])).not.to.equal(key([obj, console]));
+    expect(key([console, obj])).to.equal(signature(['1', '2']));
+  });
+
+  it(`Calling keyFunc('set')` , function() {
+    const key = keyFunc('set');
+
+    const obj = {id: 1};
+    expect(key([console, obj])).to.equal(key([console, obj]));
+    expect(key([console, obj])).to.equal(key([obj, console]));
     expect(key([console, obj])).to.equal(signature(['1', '2']));
   });
 

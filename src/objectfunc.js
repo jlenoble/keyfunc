@@ -3,6 +3,7 @@ import strictFunc from './strictfunc';
 import looseFunc from './loosefunc';
 import propertyFunc from './propertyfunc';
 import arrayFunc from './arrayfunc';
+import setFunc from './setfunc';
 
 export default function objectFunc(type, stem) {
 
@@ -30,6 +31,10 @@ export default function objectFunc(type, stem) {
 
     case 'array':
       return arrayFunc(stem.stem || stem);
+      break;
+
+    case 'set':
+      return setFunc(stem.stem || stem);
       break;
 
     default:
