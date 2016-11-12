@@ -81,4 +81,12 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
+  it(`Calling keyFunc('array')` , function() {
+    const key = keyFunc('array');
+
+    const obj = {id: 1};
+    expect(key([console, obj])).to.equal(key([console, obj]));
+    expect(key([console, obj])).to.equal(signature(['1', '2']));
+  });
+
 });

@@ -2,6 +2,7 @@ import isString from 'is-string';
 import strictFunc from './strictfunc';
 import looseFunc from './loosefunc';
 import propertyFunc from './propertyfunc';
+import arrayFunc from './arrayfunc';
 
 export default function objectFunc(type, stem) {
 
@@ -25,6 +26,10 @@ export default function objectFunc(type, stem) {
 
     case 'property':
       return propertyFunc(stem.property || stem, stem.stem);
+      break;
+
+    case 'array':
+      return arrayFunc(stem.stem || stem);
       break;
 
     default:
