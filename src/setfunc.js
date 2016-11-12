@@ -8,10 +8,10 @@ export default function arrayFunc(stem) {
     stem = '';
   }
 
-  return (_strictFunc => {
+  return ((_stem, _strictFunc) => {
 
-    return arr => signature(arr.map(_strictFunc).sort());
+    return arr => _stem + signature(arr.map(_strictFunc).sort());
 
-  })(strictFunc(stem));
+  })(stem, strictFunc(stem));
 
 };

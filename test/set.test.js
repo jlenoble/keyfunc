@@ -43,7 +43,8 @@ describe(`Testing setFunc`, function() {
     expect(key([console, obj])).not.to.equal(key([console, {id: 1}]));
 
     expect(key([console, obj])).to.equal(key([obj, console]));
-    expect(key([console, obj])).to.equal(signature(['key-1', 'key-2']));
+    expect(key([console, obj])).to.equal('key-' +
+      signature(['key-1', 'key-2']));
   });
 
 });
