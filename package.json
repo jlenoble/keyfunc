@@ -1,6 +1,6 @@
 {
   "name": "keyfunc",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Creates custom functions returning custom keys for any set of args",
   "main": "lib/keyfunc.js",
   "scripts": {
