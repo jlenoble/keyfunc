@@ -44,7 +44,7 @@ describe(`Testing setFunc`, function() {
 
     expect(key([console, obj])).to.equal(key([obj, console]));
     expect(key([console, obj])).to.equal('key-' +
-      signature(['key-1', 'key-2']));
+      signature(['1', '2']));
   });
 
 });

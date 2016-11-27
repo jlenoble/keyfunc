@@ -16,7 +16,7 @@ const key = keyFunc(
   {property: 'color'}, // Third argument and all subsequent ones can be
   // anything matched literally from their property 'id' downwards
   'array', // Fourth argument is an array of 'object'
-  'set', // Fifth argument is a set of 'object'
+  'set' // Fifth argument is a set of 'object'
 );
 
 const obj = {id: 1};
