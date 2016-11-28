@@ -28,7 +28,7 @@ const s2 = key(console, 'log', {color: 'red'}, [console, obj],
 s1 === s2; // true
 ```
 
-See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ```set:*```.
+See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ```set:*```. See [property:*](#property) for construct ```property:*```.
 
 ### Options
 
@@ -207,6 +207,20 @@ By default, options ```'array'``` and ```'set'``` define arrays and sets of obje
 * ```'set:property:[propertyName]'```: Expects an array of objects with property 'propertyName' (unordered).
 * ```'set:array'```: Expects an array (unordered) of arrays (strictly ordered) of objects (strictly compared).
 * ```'set:set'```: Expects an array (unordered) of arrays (unordered) of objects (strictly compared).
+
+For other element types, you will need to use option 'sub' instead. See [Mixed arrays](#mixed-arrays).
+
+### ```property:*```
+
+By default, option ```'property'``` indicates that objects will be compared with regard to a particular property, specified as second argument: ```keyFunc({property: 'id'})``` for example.
+
+The comparison in such cases will be done literally. But if you want another type of comparison, you may use the following:
+
+* ```'property:object'```: Expects property to be an object, strictly compared.
+* ```'property:array'```: Expects property to be an array (strictly ordered) of objects (strictly compared).
+* ```'property:set'```: Expects property to be an array (unordered) of objects (strictly compared).
+
+For other property types, you will need to use option 'sub' instead. See [Mixed properties](#mixed-properties).
 
 ### Mixed arrays
 

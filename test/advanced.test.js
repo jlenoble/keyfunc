@@ -141,3 +141,53 @@ describe('Testing keyFunc with option set:*', function() {
   });
 
 });
+
+describe('Testing keyFunc with option property:*', function() {
+
+  it(`Calling keyFunc({type: 'property:object', property: 'id')` , function() {
+    const key = keyFunc({
+      type: 'property:object',
+      property: 'id'
+    });
+
+    const o = {name: 'Amy'};
+    const obj = {id: o};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({id: o}));
+    expect(key(obj)).not.to.equal(key({id: {name: 'Amy'}}));
+    expect(key(obj)).to.equal('1');
+  });
+
+  it(`Calling keyFunc({type: 'property:array', property: 'id')` , function() {
+    const key = keyFunc({
+      type: 'property:array',
+      property: 'id'
+    });
+
+    const o = {name: 'Amy'};
+    const o2 = {name: 'Brice'};
+    const obj = {id: [o, o2]};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({id: [o, o2]}));
+    expect(key(obj)).not.to.equal(key({id: [o2, o]}));
+    expect(key(obj)).not.to.equal(key({id: [{name: 'Amy'}, {name: 'Brice'}]}));
+    expect(key(obj)).to.equal(signature(['1', '2']));
+  });
+
+  it(`Calling keyFunc({type: 'property:set', property: 'id')` , function() {
+    const key = keyFunc({
+      type: 'property:set',
+      property: 'id'
+    });
+
+    const o = {name: 'Amy'};
+    const o2 = {name: 'Brice'};
+    const obj = {id: [o, o2]};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({id: [o, o2]}));
+    expect(key(obj)).to.equal(key({id: [o2, o]}));
+    expect(key(obj)).not.to.equal(key({id: [{name: 'Amy'}, {name: 'Brice'}]}));
+    expect(key(obj)).to.equal(signature(['1', '2']));
+  });
+
+});

@@ -8,27 +8,11 @@ import setFunc from './setfunc';
 function whichFunc(type, prop) {
 
   switch (type) {
-
-    case 'object':
-      return strictFunc();
-      break;
-
-    case 'literal':
-      return looseFunc();
-      break;
-
-    case 'property':
-      return propertyFunc(prop);
-      break;
-
-    case 'array':
-      return arrayFunc();
-      break;
-
-    case 'set':
-      return setFunc();
-      break;
-
+    case 'object': return strictFunc();
+    case 'literal': return looseFunc();
+    case 'property': return propertyFunc(prop);
+    case 'array': return arrayFunc();
+    case 'set': return setFunc();
   }
 
 }
@@ -59,23 +43,19 @@ export default function objectFunc(type, stem) {
 
     case 'object':
       return strictFunc(stem.stem || stem);
-      break;
 
     case 'literal':
       return looseFunc(stem.stem || stem);
-      break;
 
     case 'property':
-      return propertyFunc(stem.property || stem, stem.stem);
-      break;
+      return propertyFunc(stem.property || stem, stem.stem,
+        whichFunc(match, prop));
 
     case 'array':
       return arrayFunc(stem.stem || stem, whichFunc(match, prop));
-      break;
 
     case 'set':
       return setFunc(stem.stem || stem, whichFunc(match, prop));
-      break;
 
     default:
       throw new TypeError(`Keys can't be created for type ${type}`);

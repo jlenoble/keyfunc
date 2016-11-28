@@ -34,13 +34,6 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
         signature([signature(console), signature(obj)].sort()));
     });
 
-  });
-
-  [
-    undefined,
-    'key-'
-  ].forEach(function(_key) {
-
     it(`Calling setFunc(${_key}, propertyFunc('id'))`,
     function() {
       const key = setFunc(_key, propertyFunc('id'));
@@ -64,13 +57,6 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
       expect(key([obj2, obj])).to.equal((_key ? _key : '') +
         signature([signature(obj2.id), signature(obj.id)].sort()));
     });
-
-  });
-
-  [
-    undefined,
-    'key-'
-  ].forEach(function(_key) {
 
     it(`Calling setFunc(${_key}, arrayFunc())`,
     function() {
@@ -103,13 +89,6 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
           signature(['3', '1', '2']) // First key'ed was o2, then o3, then o1
         ].sort()));
     });
-
-  });
-
-  [
-    undefined,
-    'key-'
-  ].forEach(function(_key) {
 
     it(`Calling setFunc(${_key}, setFunc())`,
     function() {

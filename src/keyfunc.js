@@ -12,7 +12,7 @@ export default function keyFunc(...args) {
       };
     }
 
-    if (option.property) {
+    if (option.property && !option.type) {
       option.type = 'property';
     }
 
@@ -43,7 +43,7 @@ export default function keyFunc(...args) {
 
     return function(...args) {
 
-      return args.map((arg, i, ar) => {
+      return args.map((arg, i) => {
         if (i <= max) {
           return keyFuncs[i](arg);
         } else {
