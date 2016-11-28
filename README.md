@@ -32,11 +32,13 @@ See also [Advanced usage](#advanced-usage) for constructs ```array:*``` and ```s
 
 ### Options
 
-* ```stem```: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also option 'literal'.
+* ```stem```: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
 
 * ```type```: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed (that is ```stem``` and ```rest```) simultaneously.
 
 * ```rest```: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
+
+* ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```.
 
 ```js
 import keyFunc from 'keyfunc';
@@ -193,6 +195,8 @@ s1 === s3; // true
 
 ## Advanced Usage
 
+### ```array:*``` and ```set:*```
+
 By default, options ```'array'``` and ```'set'``` define arrays and sets of objects compared with strict equality (```===```). When the comparison can (or should) be relaxed or precised, those options can be extended as such:
 
 * ```'array:literal'```: Expects an array of literals (strictly ordered).
@@ -204,7 +208,38 @@ By default, options ```'array'``` and ```'set'``` define arrays and sets of obje
 * ```'set:array'```: Expects an array (unordered) of arrays (strictly ordered) of objects (strictly compared).
 * ```'set:set'```: Expects an array (unordered) of arrays (unordered) of objects (strictly compared).
 
-Deeper control is not supported.
+### Mixed arrays
+
+With the above, you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
+
+Therefore you need deep indexing with option ```'sub'```. Syntax resembles that of ```keyFunc``` but arguments are wrapped in an array.
+
+```js
+import keyFunc from 'keyfunc';
+
+const poorKey = keyFunc({type: 'literal', rest: true});
+
+const sharpKey = keyFunc({
+  type: 'array', // Mandatory
+  sub: ['object', 'literal'],
+  rest: true // Expects a list of mixed arrays, not only a single one
+});
+
+const o1 = {name: 1};
+const o2 = {name: 2};
+const o3 = {name: 3};
+
+const poor = poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
+const sharp = sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
+
+o1.name = 4;
+
+poor !== poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
+poor === poorKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
+
+sharp === sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
+sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
+```
 
 ## License
 
