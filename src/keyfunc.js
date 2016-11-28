@@ -1,5 +1,6 @@
 import isString from 'is-string';
 import objectFunc from './objectfunc';
+import signature from 'sig';
 
 export default function keyFunc(...args) {
 
@@ -13,6 +14,16 @@ export default function keyFunc(...args) {
 
     if (option.property) {
       option.type = 'property';
+    }
+
+    if (option.sub) {
+      if (option.type === 'array') {
+        return (function(stem, key) {
+          return function(args) {
+            return stem + signature([key(...args)]);
+          };
+        }(option.stem ? option.stem : '', keyFunc(...option.sub)));
+      } // else ignore option sub
     }
 
     return objectFunc(option.type, option);
@@ -32,7 +43,7 @@ export default function keyFunc(...args) {
 
     return function(...args) {
 
-      return args.map((arg, i) => {
+      return args.map((arg, i, ar) => {
         if (i <= max) {
           return keyFuncs[i](arg);
         } else {

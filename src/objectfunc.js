@@ -10,23 +10,23 @@ function whichFunc(type, prop) {
   switch (type) {
 
     case 'object':
-      return strictFunc;
+      return strictFunc();
       break;
 
     case 'literal':
-      return looseFunc;
+      return looseFunc();
       break;
 
     case 'property':
-      return propertyFunc.bind(undefined, prop);
+      return propertyFunc(prop);
       break;
 
     case 'array':
-      return arrayFunc;
+      return arrayFunc();
       break;
 
     case 'set':
-      return setFunc;
+      return setFunc();
       break;
 
   }

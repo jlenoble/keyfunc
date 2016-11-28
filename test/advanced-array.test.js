@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import signature from 'sig';
 import arrayFunc from '../src/arrayfunc';
-import loosefunc from '../src/loosefunc';
-import propertyfunc from '../src/propertyfunc';
+import looseFunc from '../src/loosefunc';
+import propertyFunc from '../src/propertyfunc';
 import setFunc from '../src/setfunc';
 
 describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
@@ -12,9 +12,9 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling arrayFunc(${_key}, loosefunc)`,
+    it(`Calling arrayFunc(${_key}, looseFunc())`,
     function() {
-      const key = arrayFunc(_key, loosefunc);
+      const key = arrayFunc(_key, looseFunc());
 
       expect(key([console])).to.equal(key([console]));
       expect(key([console, console])).to.equal(key([console, console]));
@@ -41,9 +41,9 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling arrayFunc(${_key}, propertyfunc.bind(undefined, 'id'))`,
+    it(`Calling arrayFunc(${_key}, propertyFunc('id'))`,
     function() {
-      const key = arrayFunc(_key, propertyfunc.bind(undefined, 'id'));
+      const key = arrayFunc(_key, propertyFunc('id'));
 
       const obj = {id: 1};
       const obj2 = {id: 2};
@@ -72,9 +72,9 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling arrayFunc(${_key}, arrayFunc)`,
+    it(`Calling arrayFunc(${_key}, arrayFunc())`,
     function() {
-      const key = arrayFunc(_key, arrayFunc);
+      const key = arrayFunc(_key, arrayFunc());
 
       const o1 = {};
       const o2 = {id: 1};
@@ -111,9 +111,9 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling arrayFunc(${_key}, setFunc)`,
+    it(`Calling arrayFunc(${_key}, setFunc())`,
     function() {
-      const key = arrayFunc(_key, setFunc);
+      const key = arrayFunc(_key, setFunc());
 
       const o1 = {};
       const o2 = {id: 1};

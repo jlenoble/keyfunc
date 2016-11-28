@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import signature from 'sig';
 import arrayFunc from '../src/arrayfunc';
-import loosefunc from '../src/loosefunc';
-import propertyfunc from '../src/propertyfunc';
+import looseFunc from '../src/loosefunc';
+import propertyFunc from '../src/propertyfunc';
 import setFunc from '../src/setfunc';
 
 describe(`Testing setFunc with elementKeyFunc arg`, function() {
@@ -12,9 +12,9 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling setFunc(${_key}, loosefunc)`,
+    it(`Calling setFunc(${_key}, looseFunc())`,
     function() {
-      const key = setFunc(_key, loosefunc);
+      const key = setFunc(_key, looseFunc());
 
       expect(key([console])).to.equal(key([console]));
       expect(key([console, console])).to.equal(key([console, console]));
@@ -41,9 +41,9 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling setFunc(${_key}, propertyfunc.bind(undefined, 'id'))`,
+    it(`Calling setFunc(${_key}, propertyFunc('id'))`,
     function() {
-      const key = setFunc(_key, propertyfunc.bind(undefined, 'id'));
+      const key = setFunc(_key, propertyFunc('id'));
 
       const obj = {id: 1};
       const obj2 = {id: 2};
@@ -72,9 +72,9 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling setFunc(${_key}, arrayFunc)`,
+    it(`Calling setFunc(${_key}, arrayFunc())`,
     function() {
-      const key = setFunc(_key, arrayFunc);
+      const key = setFunc(_key, arrayFunc());
 
       const o1 = {};
       const o2 = {id: 1};
@@ -111,9 +111,9 @@ describe(`Testing setFunc with elementKeyFunc arg`, function() {
     'key-'
   ].forEach(function(_key) {
 
-    it(`Calling setFunc(${_key}, setFunc)`,
+    it(`Calling setFunc(${_key}, setFunc())`,
     function() {
-      const key = setFunc(_key, setFunc);
+      const key = setFunc(_key, setFunc());
 
       const o1 = {};
       const o2 = {id: 1};
