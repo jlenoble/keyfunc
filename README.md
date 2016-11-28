@@ -28,7 +28,7 @@ const s2 = key(console, 'log', {color: 'red'}, [console, obj],
 s1 === s2; // true
 ```
 
-See also [Advanced usage](#advanced-usage) for constructs ```array:*``` and ```set:*```.
+See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ```set:*```.
 
 ### Options
 
