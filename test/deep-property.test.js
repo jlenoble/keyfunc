@@ -291,4 +291,46 @@ describe(`Testing deep identity for option 'property'`, function() {
 
   });
 
+  it(`Calling keyFunc({
+    type: 'property',
+    property: 'home:kitchen:table'
+  })`, function() {
+    const key = keyFunc({
+      type: 'property',
+      property: 'home:kitchen:table'
+    });
+
+    const obj = {home: {kitchen: {table: 'blue'}}};
+    const obj2 = {home: {kitchen: {table: 'red'}}};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).not.to.equal(key(obj2));
+    expect(key(obj)).to.equal(key({home: {kitchen: {table: 'blue'}}}));
+    expect(() => key({home: {livingRoom: {table: 'blue'}}}))
+      .to.throw(ReferenceError,
+      `Can't generate key for object with no property 'kitchen'`);
+    expect(key(obj)).to.equal(signature('blue'));
+  });
+
+  it(`Calling keyFunc({
+    type: 'property',
+    property: 'home:kitchen',
+    sub: ['object']
+  })`, function() {
+    const key = keyFunc({
+      type: 'property',
+      property: 'home:kitchen',
+      sub: ['object']
+    });
+
+    const obj = {home: {kitchen: [{table: 'blue'}]}};
+    const obj2 = {home: {kitchen: [{table: 'red'}]}};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).not.to.equal(key(obj2));
+    expect(key(obj)).not.to.equal(key({home: {kitchen: [{table: 'blue'}]}}));
+    expect(() => key({home: {livingRoom: [{table: 'blue'}]}}))
+      .to.throw(ReferenceError,
+      `Can't generate key for object with no property 'kitchen'`);
+    expect(key(obj)).to.equal(signature(['1']));
+  });
+
 });

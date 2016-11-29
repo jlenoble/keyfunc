@@ -2,7 +2,7 @@ import isString from 'is-string';
 import signature from 'sig';
 import looseFunc from './loosefunc';
 
-export default function propertyFunc(property, stem,
+export default function propertyFunc(property, stem = '',
   propertyKeyFunc= looseFunc()) {
 
   if (!isString(property)) {
