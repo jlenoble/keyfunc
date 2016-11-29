@@ -197,4 +197,33 @@ describe('Testing README.md examples', function() {
       {data: [o2, 'name']}, {data: [o3, 'name']}));
   });
 
+  it(`Deep properties`, function() {
+    const cumbersomeKey = keyFunc({
+      property: 'humanity',
+      sub: [{
+        property: 'man',
+        sub: [{
+          property: 'brain',
+          sub: [{
+            property: 'thought'
+          }]
+        }]
+      }]
+    });
+    const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
+
+    const oCumbersome = {humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]};
+    const oStraight = {humanity: {man: {brain: {thought: 'Duh?'}}}};
+
+    expect(cumbersomeKey(oCumbersome)).not.to.equal(straightKey(oStraight));
+    expect(cumbersomeKey(oCumbersome)).to.equal(
+      cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]}));
+    expect(cumbersomeKey(oCumbersome)).not.to.equal(
+      cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Da!'}]}]}]}));
+    expect(straightKey(oStraight)).to.equal(
+      straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
+    expect(straightKey(oStraight)).not.to.equal(
+      straightKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
+  });
+
 });

@@ -298,6 +298,41 @@ sharp !== sharpKey({data: [{name: 1}, 'name']}, {data: [o2, 'name']},
 
 ### Deep properties
 
+Using the syntax of [Mixed properties](#mixed-properties), it's cumbersome to write hints to get to a deep property. Moreover you would have to reformat properties at each level so that they are bracketed.
+
+But you can refine your declaration of 'property' to create a simplified key function. The two key functions are distinct and compute different values for the same input. The cumbersome one adds indeed internally extra brackets at each level, yielding different signatures, but both key functions are equivalent. See the following example:
+
+```js
+import keyFunc from 'keyfunc';
+
+const cumbersomeKey = keyFunc({
+  property: 'humanity',
+  sub: [{
+    property: 'man',
+    sub: [{
+      property: 'brain',
+      sub: [{
+        property: 'thought'
+      }]
+    }]
+  }]
+});
+const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
+
+const oCumbersome = {humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]};
+const oStraight = {humanity: {man: {brain: {thought: 'Duh?'}}}};
+
+cumbersomeKey(oCumbersome) !== straightKey(oStraight));
+cumbersomeKey(oCumbersome) ===
+  cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]});
+cumbersomeKey(oCumbersome) !==
+  cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Da!'}]}]}]});
+straightKey(oStraight) ===
+  straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
+straightKey(oStraight) !==
+  straightKey({humanity: {man: {brain: {thought: 'Da!'}}}});
+```
+
 ### Unordered lists
 
 ## License
