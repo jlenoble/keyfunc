@@ -47,8 +47,18 @@ export default function keyFunc(...args) {
   return (function(keyFuncs, args) {
     const max = keyFuncs.length - 1;
     let rest = 0;
+    let unordered = false;
 
     while (rest <= max) {
+      if (args[rest].unordered) {
+        if (rest === 0 && args.length === 1) {
+          unordered = true;
+          args[rest].rest = true;
+        } else {
+          throw new Error(
+            `'unordered' option can only be used with a repeating single type`);
+        }
+      }
       if (args[rest].rest) {
         break;
       }
@@ -57,7 +67,7 @@ export default function keyFunc(...args) {
 
     return function(...args) {
 
-      return args.map((arg, i) => {
+      const keys = args.map((arg, i) => {
         if (i <= max) {
           return keyFuncs[i](arg);
         } else {
@@ -66,7 +76,13 @@ export default function keyFunc(...args) {
           }
           return keyFuncs[rest](arg);
         }
-      }).join('_');
+      })
+
+      if (unordered) {
+        keys.sort();
+      }
+
+      return keys.join('_');
 
     };
 
