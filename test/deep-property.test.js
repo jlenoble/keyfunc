@@ -7,12 +7,12 @@ describe(`Testing deep identity for option 'property'`, function() {
   it(`Calling keyFunc({
     type: 'property',
     property: 'data',
-    sub: ['object', 'object']
+    sub: {type: 'array', sub: ['object', 'object']}
   })`, function() {
     const key = keyFunc({
       type: 'property',
       property: 'data',
-      sub: ['object', 'object'],
+      sub: {type: 'array', sub: ['object', 'object']},
       stem: 'key'
     });
 
@@ -32,13 +32,13 @@ describe(`Testing deep identity for option 'property'`, function() {
   it(`Calling keyFunc({
     type: 'property',
     property: 'data',
-    sub: ['literal', 'literal']
+    sub: {type: 'array', sub: ['literal', 'literal']}
   })` ,
     function() {
     const key = keyFunc({
       type: 'property',
       property: 'data',
-      sub: ['literal', 'literal'],
+      sub: {type: 'array', sub: ['literal', 'literal']},
       stem: 'key'
     });
 
@@ -58,19 +58,19 @@ describe(`Testing deep identity for option 'property'`, function() {
 
   it(`Calling keyFunc({
     type: 'property',
-    sub: [
+    sub: {type: 'array', sub: [
       {property: 'id'},
       {property: 'id'}
-    ],
+    ]},
     property: 'data'
   })` , function() {
     const key = keyFunc({
       type: 'property',
       property: 'data',
-      sub: [
+      sub: {type: 'array', sub: [
         {property: 'id'},
         {property: 'id'}
-      ],
+      ]},
       stem: 'key'
     });
 
@@ -96,7 +96,7 @@ describe(`Testing deep identity for option 'property'`, function() {
   })` , function() {
     const key = keyFunc({
       type: 'property',
-      sub: ['array', 'array'],
+      sub: {type: 'array', sub: ['array', 'array']},
       property: 'data',
       stem: 'key'
     });
@@ -118,12 +118,12 @@ describe(`Testing deep identity for option 'property'`, function() {
 
   it(`Calling keyFunc({
     type: 'property',
-    sub: ['set', 'set'],
+    sub: {type: 'array', sub: ['set', 'set']},
     property: 'data'
   })` , function() {
     const key = keyFunc({
       type: 'property',
-      sub: ['set', 'set'],
+      sub: {type: 'array', sub: ['set', 'set']},
       property: 'data',
       stem: 'key'
     });
@@ -145,24 +145,30 @@ describe(`Testing deep identity for option 'property'`, function() {
 
   it(`Calling keyFunc({
     type: 'property',
-    sub: [
-      'object',
-      'literal',
-      {property: 'id'},
-      'array:property:name',
-      'set'
-    ],
-    property: 'data'
-  })`, function() {
-    const key = keyFunc({
-      type: 'property',
+    sub: {
+      type: 'array',
       sub: [
         'object',
         'literal',
         {property: 'id'},
         'array:property:name',
         'set'
-      ],
+      ]
+    },
+    property: 'data'
+  })`, function() {
+    const key = keyFunc({
+      type: 'property',
+      sub: {
+        type: 'array',
+        sub: [
+          'object',
+          'literal',
+          {property: 'id'},
+          'array:property:name',
+          'set'
+        ]
+      },
       property: 'data'
     });
 
@@ -227,26 +233,32 @@ describe(`Testing deep identity for option 'property'`, function() {
 
   it(`Calling keyFunc({
     type: 'property',
-    sub: [
-      'object',
-      'literal',
-      {property: 'id'},
-      'array:property:name',
-      'set'
-    ],
-    property: 'data',
-    stem: 'key',
-    rest: true
-  })` , function() {
-    const key = keyFunc({
-      type: 'property',
+    sub: {
+      type: 'array',
       sub: [
         'object',
         'literal',
         {property: 'id'},
         'array:property:name',
         'set'
-      ],
+      ]
+    },
+    property: 'data',
+    stem: 'key',
+    rest: true
+  })` , function() {
+    const key = keyFunc({
+      type: 'property',
+      sub: {
+        type: 'array',
+        sub: [
+          'object',
+          'literal',
+          {property: 'id'},
+          'array:property:name',
+          'set'
+        ]
+      },
       property: 'data',
       stem: 'key',
       rest: true
@@ -314,23 +326,23 @@ describe(`Testing deep identity for option 'property'`, function() {
   it(`Calling keyFunc({
     type: 'property',
     property: 'home:kitchen',
-    sub: ['object']
+    sub: 'object'
   })`, function() {
     const key = keyFunc({
       type: 'property',
       property: 'home:kitchen',
-      sub: ['object']
+      sub: 'object'
     });
 
-    const obj = {home: {kitchen: [{table: 'blue'}]}};
-    const obj2 = {home: {kitchen: [{table: 'red'}]}};
+    const obj = {home: {kitchen: {table: 'blue'}}};
+    const obj2 = {home: {kitchen: {table: 'red'}}};
     expect(key(obj)).to.equal(key(obj));
     expect(key(obj)).not.to.equal(key(obj2));
-    expect(key(obj)).not.to.equal(key({home: {kitchen: [{table: 'blue'}]}}));
-    expect(() => key({home: {livingRoom: [{table: 'blue'}]}}))
+    expect(key(obj)).not.to.equal(key({home: {kitchen: {table: 'blue'}}}));
+    expect(() => key({home: {livingRoom: {table: 'blue'}}}))
       .to.throw(ReferenceError,
       `Can't generate key for object with no property 'kitchen'`);
-    expect(key(obj)).to.equal(signature(['1']));
+    expect(key(obj)).to.equal('1');
   });
 
 });

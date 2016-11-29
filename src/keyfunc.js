@@ -33,10 +33,10 @@ export default function keyFunc(...args) {
               }
               return obj[ppty];
             });
-            return stem + signature([key(...args)]);
+            return stem + key(args);
           };
         }(option.stem ? option.stem : '', option.property,
-          keyFunc(...option.sub)));
+          keyFunc(option.sub)));
       } // else ignore option sub
     }
 

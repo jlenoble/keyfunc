@@ -171,7 +171,7 @@ describe('Testing README.md examples', function() {
 
     const sharpKey = keyFunc({
       property: 'data', // Mandatory
-      sub: ['object', 'literal'],
+      sub: {type: 'array', sub: ['object', 'literal']},
       rest: true // Expects a list of mixed arrays, not only a single one
     });
 
@@ -200,26 +200,26 @@ describe('Testing README.md examples', function() {
   it(`Deep properties`, function() {
     const cumbersomeKey = keyFunc({
       property: 'humanity',
-      sub: [{
+      sub: {
         property: 'man',
-        sub: [{
+        sub: {
           property: 'brain',
-          sub: [{
+          sub: {
             property: 'thought'
-          }]
-        }]
-      }]
+          }
+        }
+      }
     });
     const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
 
-    const oCumbersome = {humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]};
+    const oCumbersome = {humanity: {man: {brain: {thought: 'Duh?'}}}};
     const oStraight = {humanity: {man: {brain: {thought: 'Duh?'}}}};
 
-    expect(cumbersomeKey(oCumbersome)).not.to.equal(straightKey(oStraight));
+    expect(cumbersomeKey(oCumbersome)).to.equal(straightKey(oStraight));
     expect(cumbersomeKey(oCumbersome)).to.equal(
-      cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Duh?'}]}]}]}));
+      cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
     expect(cumbersomeKey(oCumbersome)).not.to.equal(
-      cumbersomeKey({humanity: [{man: [{brain: [{thought: 'Da!'}]}]}]}));
+      cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
     expect(straightKey(oStraight)).to.equal(
       straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
     expect(straightKey(oStraight)).not.to.equal(
