@@ -222,9 +222,11 @@ The comparison in such cases will be done literally. But if you want another typ
 
 For other property types, you will need to use option 'sub' instead. See [Mixed properties](#mixed-properties).
 
+For deep properties, you have the construct ```{property: 'a:b:c:...'}```. See [Deep properties](#deep-properties).
+
 ### Mixed arrays
 
-With [array:* and set:*](#array-and-set), you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
+With [```array:* and set:*```](#array-and-set), you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
 
 Therefore you need deep indexing with option ```'sub'```. Syntax resembles that of ```keyFunc``` but arguments are wrapped in an array.
 
@@ -256,6 +258,43 @@ sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
 ```
 
 ### Mixed properties
+
+With [```property:*```](#property), just like for [```array:* and set:*```](#array-and-set), your properties point to base types like 'object' or 'array'. That is an improvement compared to default 'literal', but you will often want more flexibility and generate keys for arbitrary types.
+
+Just like for 'array', you can use the option 'sub' for that.
+
+```js
+import keyFunc from 'keyfunc';
+
+const poorKey = keyFunc({property: 'data', rest: true});
+
+const sharpKey = keyFunc({
+  property: 'data', // Mandatory
+  sub: ['object', 'literal'],
+  rest: true // Expects a list of mixed arrays, not only a single one
+});
+
+const o1 = {name: 1};
+const o2 = {name: 2};
+const o3 = {name: 3};
+
+const poor = poorKey({data: [o1, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+const sharp = sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+
+o1.name = 4;
+
+poor !== poorKey({data: [o1, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+poor === poorKey({data: [{name: 1}, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+
+sharp === sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+sharp !== sharpKey({data: [{name: 1}, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']});
+```  
 
 ### Deep properties
 
