@@ -76,7 +76,7 @@ export default function keyFunc(...args) {
           }
           return keyFuncs[rest](arg);
         }
-      })
+      });
 
       if (unordered) {
         keys.sort();
