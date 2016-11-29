@@ -113,83 +113,44 @@ describe(`Testing deep identity for option 'array'`, function() {
     const o2 = {id: 1};
     const o3 = {name: 'Karl'};
 
-    expect(key([
+    const obj = [
       o1,
       o3,
       o2,
       [o3],
       [o1, o2, o3]
-    ])).to.equal(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ]));
+    ];
 
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.equal(key([
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key([
       o1,
       {name: 'Karl'},
       {id: 1},
       [o3],
       [o1, o3, o2]
     ]));
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.equal(key([
+    expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       o2,
       [o3],
       [o1, {id: 1}, o3]
     ]));
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.equal(key([
+    expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       {id: 2},
       [o3],
       [o1, o2, o3]
     ]));
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.equal(key([
+    expect(key(obj)).to.equal(key([
       o1,
       o3,
       o2,
       [{name: 'Karl'}],
       [o1, o2, o3]
     ]));
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.equal(key([
+    expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       o2,
@@ -197,28 +158,10 @@ describe(`Testing deep identity for option 'array'`, function() {
       [o1, o2, o3]
     ]));
 
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.equal(signature([`1_${signature(o3)}_${signature(1)}_${
+    expect(key(obj)).to.equal(signature([`1_${signature(o3)}_${signature(1)}_${
       signature([signature('Karl')])}_${signature(['1', '2', '3'])}`]));
 
-    expect(() => key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.throw(
+    expect(() => key(obj, obj)).to.throw(
       Error, `Too many arguments, can't generate key`);
 
   });
@@ -247,138 +190,38 @@ describe(`Testing deep identity for option 'array'`, function() {
     const o2 = {id: 1};
     const o3 = {name: 'Karl'};
 
-    expect(key([
+    const obj = [
       o1,
       o3,
       o2,
       [o3],
       [o1, o2, o3]
-    ])).to.equal(key([
-      o1,
+    ];
+
+    expect(key(obj)).to.equal(key(obj));
+    expect(() => key(obj, obj)).not.to.throw();
+    expect(key(obj, obj)).to.equal(key(obj, obj));
+    expect(key(obj, obj)).not.to.equal(key(obj, [
       o3,
+      o1,
       o2,
       [o3],
       [o1, o2, o3]
     ]));
-
-    expect(() => key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.throw(
-      Error, `Too many arguments, can't generate key`);
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.equal(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ]))
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.equal(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o3,
-      o1,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ]))
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).to.equal(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
+    expect(key(obj, obj)).to.equal(key(obj, [
       o1,
       o3,
       o2,
       [o3],
       [o3, o2, o1]
-    ]))
-
-    expect(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ])).not.to.equal(key([
-      o1,
-      o3,
-      o2,
-      [o3],
-      [o1, o2, o3]
-    ], [
+    ]));
+    expect(key(obj, obj)).not.to.equal(key(obj, [
       o1,
       o3,
       o2,
       [o3],
       [o1, {id: 1}, o3]
-    ]))
+    ]));
 
   });
 

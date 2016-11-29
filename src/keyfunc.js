@@ -23,6 +23,14 @@ export default function keyFunc(...args) {
             return stem + signature([key(...args)]);
           };
         }(option.stem ? option.stem : '', keyFunc(...option.sub)));
+      } else if (option.type === 'property') {
+        return (function(stem, prop, key) {
+          return function(args) {
+            args = args[prop];
+            return stem + signature([key(...args)]);
+          };
+        }(option.stem ? option.stem : '', option.property,
+          keyFunc(...option.sub)));
       } // else ignore option sub
     }
 

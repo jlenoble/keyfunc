@@ -38,7 +38,7 @@ See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ``
 
 * ```rest```: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
 
-* ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```.
+* ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```. See also See [Mixed properties](#mixed-properties).
 
 ```js
 import keyFunc from 'keyfunc';
@@ -224,7 +224,7 @@ For other property types, you will need to use option 'sub' instead. See [Mixed 
 
 ### Mixed arrays
 
-With the above, you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
+With [array:* and set:*](#array-and-set), you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
 
 Therefore you need deep indexing with option ```'sub'```. Syntax resembles that of ```keyFunc``` but arguments are wrapped in an array.
 
@@ -254,6 +254,12 @@ poor === poorKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
 sharp === sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
 sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
 ```
+
+### Mixed properties
+
+### Deep properties
+
+### Unordered lists
 
 ## License
 
