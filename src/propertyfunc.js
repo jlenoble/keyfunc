@@ -15,12 +15,16 @@ but it was: ${JSON.stringify(property)}`);
   }
 
   return ((property, stem, keyFunc) => {
-    return obj => {
-      if (obj[property] === undefined) {
-        throw new ReferenceError(
-          `Can't generate key for object with no property '${property}'`);
-      }
-      return stem + keyFunc(obj[property]);
+    return args => {
+      args = [args, ...property.split(':')].reduce((obj, ppty) => {
+        if (obj[ppty] === undefined) {
+          throw new ReferenceError(
+            `Can't generate key for object with no property '${ppty}'`);
+        }
+        return obj[ppty];
+      });
+
+      return stem + keyFunc(args);
     };
   })(property, stem, propertyKeyFunc);
 
