@@ -144,7 +144,7 @@ describe('Testing keyFunc with option set:*', function() {
 
 describe('Testing keyFunc with option property:*', function() {
 
-  it(`Calling keyFunc({type: 'property:object', property: 'id')` , function() {
+  it(`Calling keyFunc({type: 'property:object', property: 'id'})` , function() {
     const key = keyFunc({
       type: 'property:object',
       property: 'id'
@@ -158,7 +158,7 @@ describe('Testing keyFunc with option property:*', function() {
     expect(key(obj)).to.equal('1');
   });
 
-  it(`Calling keyFunc({type: 'property:array', property: 'id')` , function() {
+  it(`Calling keyFunc({type: 'property:array', property: 'id'})` , function() {
     const key = keyFunc({
       type: 'property:array',
       property: 'id'
@@ -174,7 +174,7 @@ describe('Testing keyFunc with option property:*', function() {
     expect(key(obj)).to.equal(signature(['1', '2']));
   });
 
-  it(`Calling keyFunc({type: 'property:set', property: 'id')` , function() {
+  it(`Calling keyFunc({type: 'property:set', property: 'id'})` , function() {
     const key = keyFunc({
       type: 'property:set',
       property: 'id'
