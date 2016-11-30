@@ -212,17 +212,16 @@ describe('Testing README.md examples', function() {
     });
     const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
 
-    const oCumbersome = {humanity: {man: {brain: {thought: 'Duh?'}}}};
-    const oStraight = {humanity: {man: {brain: {thought: 'Duh?'}}}};
+    const o = {humanity: {man: {brain: {thought: 'Duh?'}}}};
 
-    expect(cumbersomeKey(oCumbersome)).to.equal(straightKey(oStraight));
-    expect(cumbersomeKey(oCumbersome)).to.equal(
+    expect(cumbersomeKey(o)).to.equal(straightKey(o));
+    expect(cumbersomeKey(o)).to.equal(
       cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
-    expect(cumbersomeKey(oCumbersome)).not.to.equal(
+    expect(cumbersomeKey(o)).not.to.equal(
       cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
-    expect(straightKey(oStraight)).to.equal(
+    expect(straightKey(o)).to.equal(
       straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
-    expect(straightKey(oStraight)).not.to.equal(
+    expect(straightKey(o)).not.to.equal(
       straightKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
   });
 
