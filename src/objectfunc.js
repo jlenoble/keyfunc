@@ -27,12 +27,13 @@ export default function objectFunc(type, stem) {
     stem = {};
   }
 
-  let match = type.match(/(\w+):(\w+)(:)?(\w+)?/);
+  let match = type.match(/(\w+):(\w+)((:)(.+))*/);
   let prop;
+
   if (match) {
     type = match[1];
-    if (match[3] === ':') {
-      prop = match[4];
+    if (match[4] === ':') {
+      prop = match[5];
     }
     match = match[2];
   } else {
