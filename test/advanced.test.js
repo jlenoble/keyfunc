@@ -158,6 +158,19 @@ describe('Testing keyFunc with option property:*', function() {
     expect(key(obj)).to.equal('1');
   });
 
+  it(`Calling keyFunc({type: 'property:literal', property: 'id'})` , function() {
+    const key = keyFunc({
+      type: 'property:literal',
+      property: 'id'
+    });
+
+    const o = {name: 'Amy'};
+    const obj = {id: o};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({id: o}));
+    expect(key(obj)).to.equal(key({id: {name: 'Amy'}}));
+  });
+
   it(`Calling keyFunc({type: 'property:array', property: 'id'})` , function() {
     const key = keyFunc({
       type: 'property:array',
