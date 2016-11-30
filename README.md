@@ -324,7 +324,7 @@ cumbersomeKey(o) === cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}}
 cumbersomeKey(o) !== cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}});
 straightKey(o) === straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
 straightKey(o) !== straightKey({humanity: {man: {brain: {thought: 'Da!'}}}});
-cumbersomeKey(o) == straightKey(o));
+cumbersomeKey(o) === straightKey(o));
 ```
 
 ### Unordered lists
