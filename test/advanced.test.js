@@ -171,6 +171,33 @@ describe('Testing keyFunc with option property:*', function() {
     expect(key(obj)).to.equal(key({id: {name: 'Amy'}}));
   });
 
+  it(`Calling keyFunc({type: 'property:property:id', property: 'data'})` ,
+  function() {
+    const key = keyFunc({
+      type: 'property:property:id',
+      property: 'data'
+    });
+
+    const obj = {data: {id: 1}};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({data: {id: 1}}));
+    expect(key(obj)).to.equal(signature(1));
+  });
+
+  it(`Calling keyFunc({type: 'property:property:id:id', property: 'data'})` ,
+  function() {
+    const key = keyFunc({
+      type: 'property:property:id:id',
+      property: 'data'
+    });
+
+    const obj = {data: {id: {id: 1}}};
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key({data: {id: {id: 1}}}));
+    expect(key(obj)).not.to.equal(signature({id: 1}));
+    expect(key(obj)).to.equal(signature(1));
+  });
+
   it(`Calling keyFunc({type: 'property:array', property: 'id'})` , function() {
     const key = keyFunc({
       type: 'property:array',
