@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git://github.com/jlenoble/keyfunc.git"
   },
-  "keywords": [],
+  "keywords": ["key", "signature", "arguments"],
   "author": {
     "name": "Jason Lenoble",
     "email": "jason.lenoble@gmail.com"
