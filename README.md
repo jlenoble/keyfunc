@@ -13,8 +13,7 @@ import keyFunc from 'keyfunc';
 const key = keyFunc(
   'object', // First argument must be an object matched strictly
   'literal', // Second argument can be anything matched literally
-  {property: 'color'}, // Third argument and all subsequent ones can be
-  // anything matched literally from their property 'id' downwards
+  {property: 'color'}, // Third argument can be anything matched literally from their property 'id' downwards
   'array', // Fourth argument is an array of 'object'
   'set' // Fifth argument is a set of 'object'
 );
@@ -34,11 +33,11 @@ See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ``
 
 * ```stem```: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
 
-* ```type```: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed (that is ```stem``` and ```rest```) simultaneously.
+* ```type```: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed simultaneously.
 
 * ```rest```: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
 
-* ```unordered```: If omitted, the arguments passed the generated key function are strictly ordered. If true, then it enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists).
+* ```unordered```: By default, the arguments passed to the generated key function are strictly ordered. If set to true, then 'unordered' option enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists) for an example.
 
 * ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```. See also See [Mixed properties](#mixed-properties).
 
@@ -214,7 +213,7 @@ For other element types, you will need to use option 'sub' instead. See [Mixed a
 
 ### ```property:*```
 
-By default, option ```'property'``` indicates that objects will be compared with regard to a particular property, specified as second argument: ```keyFunc({property: 'id'})``` for example.
+By default, option ```'property'``` indicates that objects will be compared with regard to a particular property, specified as an option: ```keyFunc({property: 'id'})``` for example.
 
 The comparison in such cases will be done literally. But if you want another type of comparison, you may use the following:
 
@@ -319,18 +318,13 @@ const cumbersomeKey = keyFunc({
 });
 const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
 
-const oCumbersome = {humanity: {man: {brain: {thought: 'Duh?'}}}};
-const oStraight = {humanity: {man: {brain: {thought: 'Duh?'}}}};
+const o = {humanity: {man: {brain: {thought: 'Duh?'}}}};
 
-cumbersomeKey(oCumbersome) ===
-  cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
-cumbersomeKey(oCumbersome) !==
-  cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}});
-straightKey(oStraight) ===
-  straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
-straightKey(oStraight) !==
-  straightKey({humanity: {man: {brain: {thought: 'Da!'}}}});
-cumbersomeKey(oCumbersome) == straightKey(oStraight));
+cumbersomeKey(o) === cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
+cumbersomeKey(o) !== cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}});
+straightKey(o) === straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
+straightKey(o) !== straightKey({humanity: {man: {brain: {thought: 'Da!'}}}});
+cumbersomeKey(o) == straightKey(o));
 ```
 
 ### Unordered lists
