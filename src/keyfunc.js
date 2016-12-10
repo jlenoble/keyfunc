@@ -57,14 +57,19 @@ export default function keyFunc(...args) {
 
     return function(...args) {
 
-      const keys = args.map((arg, i) => {
+      let keys = [];
+      args.forEach((arg, i) => {
         if (i <= max) {
-          return keyFuncs[i](arg);
+          if (keyFuncs[i]) {
+            keys.push(keyFuncs[i](arg));
+          }
         } else {
           if (rest > max) {
             throw new Error(`Too many arguments, can't generate key`);
           }
-          return keyFuncs[rest](arg);
+          if (keyFuncs[rest]) {
+            keys.push(keyFuncs[rest](arg));
+          }
         }
       });
 

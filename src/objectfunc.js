@@ -13,6 +13,7 @@ function whichFunc(type, prop) {
     case 'property': return propertyFunc(prop);
     case 'array': return arrayFunc();
     case 'set': return setFunc();
+    case 'ignore': return () => '';
   }
 
 }
@@ -64,6 +65,9 @@ but it was: ${property}`);
 
     case 'set':
       return setFunc(stem.stem || stem, whichFunc(match, prop));
+
+    case 'ignore':
+      return;
 
     default:
       throw new TypeError(`Keys can't be created for type ${type}`);
