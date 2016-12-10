@@ -11,13 +11,14 @@ describe('Testing README.md examples', function() {
       // anything matched literally from their property 'id' downwards
       'array', // Fourth argument is an array of 'object'
       'set', // Fifth argument is a set of 'object'
+      'ignore', // Sixth argument is ignored
     );
 
     const obj = {id: 1};
     const s1 = key(console, 'log', {color: 'red'}, [console, obj],
-      [console, obj]);
+      [console, obj], console);
     const s2 = key(console, 'log', {color: 'red'}, [console, obj],
-      [obj, console]);
+      [obj, console], 'dummy');
 
     expect(s1).to.equal(s2);
   });
