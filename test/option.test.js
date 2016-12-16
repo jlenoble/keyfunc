@@ -27,8 +27,12 @@ describe(`Testing deep identity for option 'option'`, function() {
 
     expect(key(obj)).to.equal(key(obj));
     expect(key(obj)).to.equal(key({name: 'Albert', fn: console.error}));
+    expect(key(obj)).to.equal(key({name: 'Albert', fn: console.error,
+      dummy: 'dummy'}));
+
     expect(key(obj)).not.to.equal(key({name: 'Albert', fn: console.log}));
     expect(key(obj)).not.to.equal(key({name: 'Frida', fn: console.error}));
+
     expect(key(obj)).to.equal('key' + signature({
       name: signature('Albert'),
       fn: '1'
