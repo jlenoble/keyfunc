@@ -58,7 +58,7 @@ but it was: ${property}`);
       let array = property.split(':').reverse();
       return [whichFunc(match, prop), ...array].reduce((fn, ppty) => {
         return propertyFunc(ppty, stem.stem, fn);
-      });      
+      });
 
     case 'array':
       return arrayFunc(stem.stem || stem, whichFunc(match, prop));
