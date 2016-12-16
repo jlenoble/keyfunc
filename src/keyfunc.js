@@ -27,6 +27,20 @@ export default function keyFunc(...args) {
       } else if (option.type === 'property') {
         return propertyFunc(option.property, option.stem ? option.stem : '',
           keyFunc(option.sub));
+      } else if (option.type === 'option') {
+        let keyObject = {};
+        for (let key in option.sub) {
+          keyObject[key] = keyFunc(option.sub[key]);
+        }
+        return (function(stem, keyObject) {
+          return function(args) {
+            let res = {};
+            for (let key in keyObject) {
+              res[key] = keyObject[key](args[key]);
+            }
+            return stem + signature(res);
+          };
+        }(option.stem ? option.stem : '', keyObject));
       } // else ignore option sub
     }
 
