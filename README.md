@@ -28,7 +28,7 @@ const s2 = key(console, 'log', {color: 'red'}, [console, obj],
 s1 === s2; // true
 ```
 
-There is also a type 'option' which can't be used without the option 'sub' specifying the nature of tis properties. See [Type 'option'](#type-option).
+There is also a type 'option' which can't be used without the option 'sub' specifying the nature of its properties. See [Type 'option'](#type-option).
 
 See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ```set:*```. See [property:*](#property) for construct ```property:*```.
 
@@ -43,6 +43,8 @@ See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ``
 * ```unordered```: By default, the arguments passed to the generated key function are strictly ordered. If set to true, then 'unordered' option enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists) for an example.
 
 * ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```. See also See [Mixed properties](#mixed-properties).
+
+* ```optional```: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
 
 ```js
 import keyFunc from 'keyfunc';
