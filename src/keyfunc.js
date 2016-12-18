@@ -14,7 +14,8 @@ export default function keyFunc(...args) {
     }
 
     if (option.optional) {
-      delete option.optional;
+      let _option = Object.assign({}, option);
+      delete _option.optional;
       return (function(stem, key) {
         return function(...args) {
           if (args.length === 0 || (args.length === 1 &&
@@ -24,7 +25,7 @@ export default function keyFunc(...args) {
             return key(...args);
           }
         };
-      }(option.stem ? option.stem : '', keyFunc(option)));
+      }(_option.stem ? _option.stem : '', keyFunc(_option)));
     }
 
     if (option.property && !option.type) {
