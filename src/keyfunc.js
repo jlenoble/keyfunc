@@ -13,6 +13,20 @@ export default function keyFunc(...args) {
       };
     }
 
+    if (option.optional) {
+      delete option.optional;
+      return (function(stem, key) {
+        return function(...args) {
+          if (args.length === 0 || (args.length === 1 &&
+            args[0] === undefined)) {
+            return stem + '0';
+          } else {
+            return key(...args);
+          }
+        };
+      }(option.stem ? option.stem : '', keyFunc(option)));
+    }
+
     if (option.property && !option.type) {
       option.type = 'property';
     }
