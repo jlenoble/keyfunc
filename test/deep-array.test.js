@@ -2,13 +2,13 @@ import {expect} from 'chai';
 import signature from 'sig';
 import keyFunc from '../src/keyfunc';
 
-describe(`Testing deep identity for option 'array'`, function() {
-
-  it(`Calling keyFunc({type: 'array', sub: ['object', 'object']})` , function() {
+describe(`Testing deep identity for option 'array'`, function () {
+  it(`Calling keyFunc({type: 'array', sub: ['object', 'object']})`,
+  function () {
     const key = keyFunc({
       type: 'array',
       sub: ['object', 'object'],
-      stem: 'key'
+      stem: 'key',
     });
 
     const obj = {id: 1};
@@ -20,12 +20,12 @@ describe(`Testing deep identity for option 'array'`, function() {
       Error, `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc({type: 'array', sub: ['literal', 'literal']})` ,
-    function() {
+  it(`Calling keyFunc({type: 'array', sub: ['literal', 'literal']})`,
+  function () {
     const key = keyFunc({
       type: 'array',
       sub: ['literal', 'literal'],
-      stem: 'key'
+      stem: 'key',
     });
 
     const obj = {id: 1};
@@ -41,10 +41,10 @@ describe(`Testing deep identity for option 'array'`, function() {
   it(`Calling keyFunc({type: 'array', sub: [
         {property: 'id'},
         {property: 'id'}
-      ]})` , function() {
+      ]})`, function () {
     const key = keyFunc({type: 'array', sub: [
       {property: 'id'},
-      {property: 'id'}
+      {property: 'id'},
     ]});
 
     const obj = {id: 1};
@@ -58,7 +58,7 @@ describe(`Testing deep identity for option 'array'`, function() {
       Error, `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc({type: 'array', sub: ['array', 'array']})` , function() {
+  it(`Calling keyFunc({type: 'array', sub: ['array', 'array']})`, function () {
     const key = keyFunc({type: 'array', sub: ['array', 'array']});
 
     const o1 = {};
@@ -76,7 +76,7 @@ describe(`Testing deep identity for option 'array'`, function() {
       Error, `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc({type: 'array', sub: ['set', 'set']})` , function() {
+  it(`Calling keyFunc({type: 'array', sub: ['set', 'set']})`, function () {
     const key = keyFunc({type: 'array', sub: ['set', 'set']});
 
     const o1 = {};
@@ -100,13 +100,13 @@ describe(`Testing deep identity for option 'array'`, function() {
         {property: 'id'},
         'array:property:name',
         'set'
-      ]})` , function() {
+      ]})`, function () {
     const key = keyFunc({type: 'array', sub: [
       'object',
       'literal',
       {property: 'id'},
       'array:property:name',
-      'set'
+      'set',
     ]});
 
     const o1 = {};
@@ -118,7 +118,7 @@ describe(`Testing deep identity for option 'array'`, function() {
       o3,
       o2,
       [o3],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ];
 
     expect(key(obj)).to.equal(key(obj));
@@ -127,35 +127,35 @@ describe(`Testing deep identity for option 'array'`, function() {
       {name: 'Karl'},
       {id: 1},
       [o3],
-      [o1, o3, o2]
+      [o1, o3, o2],
     ]));
     expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       o2,
       [o3],
-      [o1, {id: 1}, o3]
+      [o1, {id: 1}, o3],
     ]));
     expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       {id: 2},
       [o3],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ]));
     expect(key(obj)).to.equal(key([
       o1,
       o3,
       o2,
       [{name: 'Karl'}],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ]));
     expect(key(obj)).not.to.equal(key([
       o1,
       o3,
       o2,
       [{name: 'Poppy'}],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ]));
 
     expect(key(obj)).to.equal(signature([`1_${signature(o3)}_${signature(1)}_${
@@ -163,7 +163,6 @@ describe(`Testing deep identity for option 'array'`, function() {
 
     expect(() => key(obj, obj)).to.throw(
       Error, `Too many arguments, can't generate key`);
-
   });
 
   it(`Calling keyFunc({type: 'array', sub: [
@@ -172,7 +171,7 @@ describe(`Testing deep identity for option 'array'`, function() {
         {property: 'id'},
         'array:property:name',
         'set'
-      ], stem: 'key', rest: true})` , function() {
+      ], stem: 'key', rest: true})`, function () {
     const key = keyFunc({
       type: 'array',
       sub: [
@@ -180,10 +179,10 @@ describe(`Testing deep identity for option 'array'`, function() {
         'literal',
         {property: 'id'},
         'array:property:name',
-        'set'
+        'set',
       ],
       stem: 'key',
-      rest: true
+      rest: true,
     });
 
     const o1 = {};
@@ -195,7 +194,7 @@ describe(`Testing deep identity for option 'array'`, function() {
       o3,
       o2,
       [o3],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ];
 
     expect(key(obj)).to.equal(key(obj));
@@ -206,23 +205,21 @@ describe(`Testing deep identity for option 'array'`, function() {
       o1,
       o2,
       [o3],
-      [o1, o2, o3]
+      [o1, o2, o3],
     ]));
     expect(key(obj, obj)).to.equal(key(obj, [
       o1,
       o3,
       o2,
       [o3],
-      [o3, o2, o1]
+      [o3, o2, o1],
     ]));
     expect(key(obj, obj)).not.to.equal(key(obj, [
       o1,
       o3,
       o2,
       [o3],
-      [o1, {id: 1}, o3]
+      [o1, {id: 1}, o3],
     ]));
-
   });
-
 });

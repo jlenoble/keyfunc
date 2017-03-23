@@ -1,9 +1,8 @@
 import {expect} from 'chai';
 import keyFunc from '../src/keyfunc';
 
-describe('Testing README.md examples', function() {
-
-  it(`Usage example`, function() {
+describe('Testing README.md examples', function () {
+  it(`Usage example`, function () {
     const key = keyFunc(
       'object', // First argument must be an object matched strictly
       'literal', // Second argument can be anything matched literally
@@ -11,7 +10,7 @@ describe('Testing README.md examples', function() {
       // anything matched literally from their property 'id' downwards
       'array', // Fourth argument is an array of 'object'
       'set', // Fifth argument is a set of 'object'
-      'ignore', // Sixth argument is ignored
+      'ignore' // Sixth argument is ignored
     );
 
     const obj = {id: 1};
@@ -23,27 +22,27 @@ describe('Testing README.md examples', function() {
     expect(s1).to.equal(s2);
   });
 
-  it(`Options example`, function() {
+  it(`Options example`, function () {
     const key = keyFunc(
       {
-        stem: 'first'
+        stem: 'first',
       },
       {
         stem: 'second',
         type: 'literal',
-        rest: true
+        rest: true,
       },
       {
         stem: 'third',
-        property: 'color'
+        property: 'color',
       },
       {
         stem: 'fourth',
-        type: 'array'
+        type: 'array',
       },
       {
         stem: 'fifth',
-        type: 'set'
+        type: 'set',
       }
     );
 
@@ -54,7 +53,7 @@ describe('Testing README.md examples', function() {
           [obj, console], 'dummy'))).to.be.true;
   });
 
-  it(`'object' option example`, function() {
+  it(`'object' option example`, function () {
     const key = keyFunc('object');
 
     const option1 = {color: 'red'};
@@ -72,7 +71,7 @@ describe('Testing README.md examples', function() {
     expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
   });
 
-  it(`'literal' option example`, function() {
+  it(`'literal' option example`, function () {
     const key = keyFunc('literal');
 
     const option1 = {color: 'red'};
@@ -90,7 +89,7 @@ describe('Testing README.md examples', function() {
     expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
   });
 
-  it(`'property' option example`, function() {
+  it(`'property' option example`, function () {
     const key = keyFunc({property: 'color'});
 
     const option1 = {color: 'red'};
@@ -108,7 +107,7 @@ describe('Testing README.md examples', function() {
     expect(s1).to.equal(key({color: 'red', size: 'Huge'}));
   });
 
-  it(`'array' option`, function() {
+  it(`'array' option`, function () {
     const key = keyFunc('array');
 
     const option1 = {color: 'red'};
@@ -123,7 +122,7 @@ describe('Testing README.md examples', function() {
     expect(s1).to.equal(s3);
   });
 
-  it(`'set' option`, function() {
+  it(`'set' option`, function () {
     const key = keyFunc('set');
 
     const option1 = {color: 'red'};
@@ -138,13 +137,13 @@ describe('Testing README.md examples', function() {
     expect(s1).to.equal(s3);
   });
 
-  it(`Mixed arrays`, function() {
+  it(`Mixed arrays`, function () {
     const poorKey = keyFunc({type: 'literal', rest: true});
 
     const sharpKey = keyFunc({
       type: 'array', // Mandatory
       sub: ['object', 'literal'],
-      rest: true // Expects a list of mixed arrays, not only a single one
+      rest: true, // Expects a list of mixed arrays, not only a single one
     });
 
     const o1 = {name: 1};
@@ -167,13 +166,13 @@ describe('Testing README.md examples', function() {
       [{name: 1}, 'name'], [o2, 'name'], [o3, 'name']));
   });
 
-  it(`Mixed properties`, function() {
+  it(`Mixed properties`, function () {
     const poorKey = keyFunc({property: 'data', rest: true});
 
     const sharpKey = keyFunc({
       property: 'data', // Mandatory
       sub: {type: 'array', sub: ['object', 'literal']},
-      rest: true // Expects a list of mixed arrays, not only a single one
+      rest: true, // Expects a list of mixed arrays, not only a single one
     });
 
     const o1 = {name: 1};
@@ -198,7 +197,7 @@ describe('Testing README.md examples', function() {
       {data: [o2, 'name']}, {data: [o3, 'name']}));
   });
 
-  it(`Deep properties`, function() {
+  it(`Deep properties`, function () {
     const cumbersomeKey = keyFunc({
       property: 'humanity',
       sub: {
@@ -206,10 +205,10 @@ describe('Testing README.md examples', function() {
         sub: {
           property: 'brain',
           sub: {
-            property: 'thought'
-          }
-        }
-      }
+            property: 'thought',
+          },
+        },
+      },
     });
     const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
 
@@ -226,13 +225,13 @@ describe('Testing README.md examples', function() {
       straightKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
   });
 
-  it(`Type 'option'`, function() {
+  it(`Type 'option'`, function () {
     const key = keyFunc({
       type: 'option',
       sub: {
         id: 'literal',
-        name: 'literal'
-      }
+        name: 'literal',
+      },
     });
 
     const option1 = {id: 1, name: 'a', color: 'red'};
@@ -247,7 +246,7 @@ describe('Testing README.md examples', function() {
     expect(s1).to.equal(s3);
   });
 
-  it(`Unordered lists`, function() {
+  it(`Unordered lists`, function () {
     const okey = keyFunc({type: 'object', rest: true});
     const ukey = keyFunc({type: 'object', unordered: true});
 
@@ -257,6 +256,4 @@ describe('Testing README.md examples', function() {
     expect(okey(o1, o2)).not.to.equal(okey(o2, o1));
     expect(ukey(o1, o2)).to.equal(ukey(o2, o1));
   });
-
-
 });

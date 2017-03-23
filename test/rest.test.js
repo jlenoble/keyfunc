@@ -2,10 +2,9 @@ import {expect} from 'chai';
 import signature from 'sig';
 import keyFunc from '../src/keyfunc';
 
-describe(`Testing keyFunc with option 'rest'`, function() {
-
+describe(`Testing keyFunc with option 'rest'`, function () {
   it(`Calling keyFunc({stem: 'id'}, {property: 'id'}, 'literal')`,
-  function() {
+  function () {
     const key = keyFunc({stem: 'id'}, {property: 'id'}, 'literal');
 
     const obj = {id: 2};
@@ -13,7 +12,7 @@ describe(`Testing keyFunc with option 'rest'`, function() {
   });
 
   it(`Calling keyFunc({stem: 'id', rest: true}, {property: 'id'}, 'literal')`,
-  function() {
+  function () {
     const key = keyFunc({stem: 'id', rest: true}, {property: 'id'}, 'literal');
 
     const obj = {id: 2};
@@ -29,7 +28,7 @@ describe(`Testing keyFunc with option 'rest'`, function() {
   });
 
   it(`Calling keyFunc({stem: 'id'}, {property: 'id', rest: true}, 'literal')`,
-  function() {
+  function () {
     const key = keyFunc({stem: 'id'}, {property: 'id', rest: true}, 'literal');
 
     const obj = {id: 2};
@@ -43,5 +42,4 @@ describe(`Testing keyFunc with option 'rest'`, function() {
     expect(key(obj, {id: 2}, console, obj)).to.equal(
       'id2_' + signature(2) + '_' + signature(console) + '_' + signature(2));
   });
-
 });

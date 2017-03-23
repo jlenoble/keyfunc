@@ -2,10 +2,9 @@ import {expect} from 'chai';
 import signature from 'sig';
 import setFunc from '../src/setfunc';
 
-describe(`Testing setFunc`, function() {
-
+describe(`Testing setFunc`, function () {
   it(`Calling setFunc()`,
-  function() {
+  function () {
     const key = setFunc();
 
     expect(key([console])).to.equal(key([console]));
@@ -26,7 +25,7 @@ describe(`Testing setFunc`, function() {
   });
 
   it(`Calling setFunc('key-')`,
-  function() {
+  function () {
     const key = setFunc('key-');
 
     expect(key([console])).to.equal(key([console]));
@@ -46,5 +45,4 @@ describe(`Testing setFunc`, function() {
     expect(key([console, obj])).to.equal('key-' +
       signature(['1', '2']));
   });
-
 });

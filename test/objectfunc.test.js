@@ -2,10 +2,9 @@ import {expect} from 'chai';
 import signature from 'sig';
 import objectFunc from '../src/objectfunc';
 
-describe('Testing objectFunc', function() {
-
+describe('Testing objectFunc', function () {
   [undefined, 'object'].forEach(arg => {
-    it(`Calling objectFunc(${arg ? JSON.stringify(arg) : ''})` , function() {
+    it(`Calling objectFunc(${arg ? JSON.stringify(arg) : ''})`, function () {
       const key = objectFunc(arg);
 
       expect(key(console)).to.equal('1');
@@ -27,7 +26,7 @@ but argument was: "title"`);
   });
 
   ['key-', {stem: 'key-'}].forEach(arg => {
-    it(`Calling objectFunc("object", ${JSON.stringify(arg)})` , function() {
+    it(`Calling objectFunc("object", ${JSON.stringify(arg)})`, function () {
       const key = objectFunc('object', arg);
 
       expect(key(console)).to.equal('key-1');
@@ -48,7 +47,7 @@ but argument was: "title"`);
     });
   });
 
-  it(`Calling objectFunc("literal")` , function() {
+  it(`Calling objectFunc("literal")`, function () {
     const key = objectFunc('literal');
 
     expect(key(console)).to.equal(signature(console));
@@ -59,7 +58,7 @@ but argument was: "title"`);
   });
 
   ['key-', {stem: 'key-'}].forEach(arg => {
-    it(`Calling objectFunc("literal", ${JSON.stringify(arg)})` , function() {
+    it(`Calling objectFunc("literal", ${JSON.stringify(arg)})`, function () {
       const key = objectFunc('literal', arg);
 
       expect(key(console)).to.equal('key-' + signature(console));
@@ -70,23 +69,23 @@ but argument was: "title"`);
     });
   });
 
-  it(`Calling objectFunc("property") throws`, function() {
+  it(`Calling objectFunc("property") throws`, function () {
     expect(() => objectFunc('property')).to.throw(TypeError,
       `propertyFunc requires a string as first argument,
 but it was:`);
   });
 
-  it(`Calling objectFunc("property", {"stem": "name-"}) throws`, function() {
+  it(`Calling objectFunc("property", {"stem": "name-"}) throws`, function () {
     expect(() => objectFunc('property', {stem: 'name-'})).to.throw(TypeError,
       `propertyFunc requires a string as first argument,
 but it was:`);
   });
 
   [{property: 'id'}, {property: 'name', stem: 'key-'}].forEach(arg => {
-    it(`Calling objectFunc("property", ${JSON.stringify(arg)})` , function() {
+    it(`Calling objectFunc("property", ${JSON.stringify(arg)})`, function () {
       const key = objectFunc('property', arg);
 
-      var obj = {};
+      const obj = {};
       obj[arg.property] = 1;
       expect(key(obj)).to.equal((arg.stem ? arg.stem : '') + signature(1));
       obj[arg.property] = console;
@@ -100,9 +99,8 @@ but it was:`);
     });
   });
 
-  it(`Calling objectFunc("anything") throws`, function() {
+  it(`Calling objectFunc("anything") throws`, function () {
     expect(() => objectFunc('anything')).to.throw(TypeError,
       `Keys can't be created for type anything`);
   });
-
 });

@@ -5,28 +5,20 @@ import propertyFunc from './propertyfunc';
 import arrayFunc from './arrayfunc';
 import setFunc from './setfunc';
 
-function whichFunc(type, prop) {
-
+function whichFunc (type, prop) {
   switch (type) {
-    case 'object': return strictFunc();
-    case 'literal': return looseFunc();
-    case 'property': return propertyFunc(prop);
-    case 'array': return arrayFunc();
-    case 'set': return setFunc();
-    case 'ignore': return () => '';
+  case 'object': return strictFunc();
+  case 'literal': return looseFunc();
+  case 'property': return propertyFunc(prop);
+  case 'array': return arrayFunc();
+  case 'set': return setFunc();
+  case 'ignore': return () => '';
   }
-
 }
 
-export default function objectFunc(type, stem) {
-
-  if (!isString(type)) {
-    type = 'object';
-  }
-
-  if (!stem) {
-    stem = {};
-  }
+export default function objectFunc (_type, _stem) {
+  let type = isString(_type) ? _type : 'object';
+  const stem = _stem ? _stem : {};
 
   let match = type.match(/(\w+):(\w+)((:)(.+))*/);
   let prop;
@@ -43,35 +35,33 @@ export default function objectFunc(type, stem) {
 
   switch (type) {
 
-    case 'object':
-      return strictFunc(stem.stem || stem);
+  case 'object':
+    return strictFunc(stem.stem || stem);
 
-    case 'literal':
-      return looseFunc(stem.stem || stem);
+  case 'literal':
+    return looseFunc(stem.stem || stem);
 
-    case 'property':
-      let property = stem.property || stem;
-      if (!isString(property)) {
-        throw new TypeError(`propertyFunc requires a string as first argument,
+  case 'property':
+    let property = stem.property || stem;
+    if (!isString(property)) {
+      throw new TypeError(`propertyFunc requires a string as first argument,
 but it was: ${property}`);
-      }
-      let array = property.split(':').reverse();
-      return [whichFunc(match, prop), ...array].reduce((fn, ppty) => {
-        return propertyFunc(ppty, stem.stem, fn);
-      });
+    }
+    let array = property.split(':').reverse();
+    return [whichFunc(match, prop), ...array].reduce((fn, ppty) => {
+      return propertyFunc(ppty, stem.stem, fn);
+    });
 
-    case 'array':
-      return arrayFunc(stem.stem || stem, whichFunc(match, prop));
+  case 'array':
+    return arrayFunc(stem.stem || stem, whichFunc(match, prop));
 
-    case 'set':
-      return setFunc(stem.stem || stem, whichFunc(match, prop));
+  case 'set':
+    return setFunc(stem.stem || stem, whichFunc(match, prop));
 
-    case 'ignore':
-      return;
+  case 'ignore':
+    return;
 
-    default:
-      throw new TypeError(`Keys can't be created for type ${type}`);
-
+  default:
+    throw new TypeError(`Keys can't be created for type ${type}`);
   }
-
 };

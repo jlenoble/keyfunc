@@ -2,9 +2,8 @@ import {expect} from 'chai';
 import signature from 'sig';
 import looseFunc from '../src/loosefunc';
 
-describe('Testing looseFunc', function() {
-
-  it(`Calling looseFunc()` , function() {
+describe('Testing looseFunc', function () {
+  it(`Calling looseFunc()`, function () {
     const key = looseFunc();
 
     expect(key(console)).to.equal(signature(console));
@@ -14,7 +13,7 @@ describe('Testing looseFunc', function() {
     expect(key('title')).to.equal(signature('title'));
   });
 
-  it(`Calling looseFunc('key-')` , function() {
+  it(`Calling looseFunc('key-')`, function () {
     const key = looseFunc('key-');
 
     expect(key(console)).to.equal('key-' + signature(console));
@@ -23,5 +22,4 @@ describe('Testing looseFunc', function() {
     expect(key(1)).to.equal('key-' + signature(1));
     expect(key('title')).to.equal('key-' + signature('title'));
   });
-
 });

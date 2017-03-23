@@ -2,10 +2,9 @@ import {expect} from 'chai';
 import signature from 'sig';
 import keyFunc from '../src/keyfunc';
 
-describe(`Testing keyFunc with type 'ignore'`, function() {
-
+describe(`Testing keyFunc with type 'ignore'`, function () {
   it(`Calling keyFunc('literal', 'ignore')`,
-  function() {
+  function () {
     const key = keyFunc('literal', 'ignore');
 
     expect(key('first', 'second')).to.equal(signature('first'));
@@ -18,16 +17,15 @@ describe(`Testing keyFunc with type 'ignore'`, function() {
     type: 'array',
     sub: ['object', 'ignore', 'literal']
   }, 'literal')`,
-  function() {
+  function () {
     const key = keyFunc({
       type: 'array',
-      sub: ['literal', 'ignore', 'literal']
+      sub: ['literal', 'ignore', 'literal'],
     }, 'literal');
 
     expect(key(['first', 'second', 'third'], 'fourth')).to.equal(
       signature([
-        signature('first') + '_' + signature('third')
+        signature('first') + '_' + signature('third'),
       ]) + '_' + signature('fourth'));
   });
-
 });

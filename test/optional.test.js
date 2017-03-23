@@ -2,27 +2,26 @@ import {expect} from 'chai';
 import signature from 'sig';
 import keyFunc from '../src/keyfunc';
 
-describe(`Testing deep identity for option 'optional'`, function() {
-
+describe(`Testing deep identity for option 'optional'`, function () {
   it(`Calling keyFunc({
     type: 'option',
     sub: {
       name: 'literal',
       fn: {type: 'object', optional: true}
     }
-  })`, function() {
+  })`, function () {
     const key = keyFunc({
       type: 'option',
       sub: {
         name: 'literal',
-        fn: {type: 'object', optional: true}
+        fn: {type: 'object', optional: true},
       },
-      stem: 'key'
+      stem: 'key',
     });
 
     const obj = {
       name: 'Albert',
-      fn: console.error
+      fn: console.error,
     };
 
     expect(key(obj)).to.equal(key(obj));
@@ -39,15 +38,14 @@ describe(`Testing deep identity for option 'optional'`, function() {
 
     expect(key(obj)).to.equal('key' + signature({
       name: signature('Albert'),
-      fn: '1'
+      fn: '1',
     }));
     expect(key({name: 'Albert'})).to.equal('key' + signature({
       name: signature('Albert'),
-      fn: '0' // '0' is the key for all optional arg
+      fn: '0', // '0' is the key for all optional arg
     }));
 
     expect(() => key(obj, obj)).to.throw(
       Error, `Too many arguments, can't generate key`);
   });
-
 });

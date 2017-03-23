@@ -3,21 +3,17 @@ import objectFunc from './objectfunc';
 import propertyFunc from './propertyfunc';
 import signature from 'sig';
 
-export default function keyFunc(...args) {
-
-  const func = option => {
-
-    if (isString(option)) {
-      option = {
-        type: option
-      };
-    }
+export default function keyFunc (...args) {
+  const func = _option => {
+    const option = isString(_option) ? {
+      type: _option,
+    } : _option;
 
     if (option.optional) {
       let _option = Object.assign({}, option);
       delete _option.optional;
-      return (function(stem, key) {
-        return function(...args) {
+      return (function (stem, key) {
+        return function (...args) {
           if (args.length === 0 || (args.length === 1 &&
             args[0] === undefined)) {
             return stem + '0';
@@ -34,8 +30,8 @@ export default function keyFunc(...args) {
 
     if (option.sub) {
       if (option.type === 'array') {
-        return (function(stem, key) {
-          return function(args) {
+        return (function (stem, key) {
+          return function (args) {
             return stem + signature([key(...args)]);
           };
         }(option.stem ? option.stem : '', keyFunc(...option.sub)));
@@ -44,15 +40,15 @@ export default function keyFunc(...args) {
           keyFunc(option.sub));
       } else if (option.type === 'option') {
         let keyObject = {};
-        for (let key in option.sub) {
+        Object.keys(option.sub).forEach(key => {
           keyObject[key] = keyFunc(option.sub[key]);
-        }
-        return (function(stem, keyObject) {
-          return function(args) {
+        });
+        return (function (stem, keyObject) {
+          return function (args) {
             let res = {};
-            for (let key in keyObject) {
+            Object.keys(keyObject).forEach(key => {
               res[key] = keyObject[key](args[key]);
-            }
+            });
             return stem + signature(res);
           };
         }(option.stem ? option.stem : '', keyObject));
@@ -60,11 +56,11 @@ export default function keyFunc(...args) {
     }
 
     return objectFunc(option.type, option);
-
   };
 
-  return (function(keyFuncs, args) {
+  return (function (keyFuncs, _args) {
     const max = keyFuncs.length - 1;
+    const args = _args;
     let rest = 0;
     let unordered = false;
 
@@ -84,8 +80,7 @@ export default function keyFunc(...args) {
       rest++;
     }
 
-    return function(...args) {
-
+    return function (...args) {
       let keys = [];
       args.forEach((arg, i) => {
         if (i <= max) {
@@ -107,9 +102,6 @@ export default function keyFunc(...args) {
       }
 
       return keys.join('_');
-
     };
-
   })(args.map(func), args);
-
 };

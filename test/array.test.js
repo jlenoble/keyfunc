@@ -2,10 +2,9 @@ import {expect} from 'chai';
 import signature from 'sig';
 import arrayFunc from '../src/arrayfunc';
 
-describe(`Testing arrayFunc`, function() {
-
+describe(`Testing arrayFunc`, function () {
   it(`Calling arrayFunc()`,
-  function() {
+  function () {
     const key = arrayFunc();
 
     expect(key([console])).to.equal(key([console]));
@@ -26,7 +25,7 @@ describe(`Testing arrayFunc`, function() {
   });
 
   it(`Calling arrayFunc('key-')`,
-  function() {
+  function () {
     const key = arrayFunc('key-');
 
     expect(key([console])).to.equal(key([console]));
@@ -45,5 +44,4 @@ describe(`Testing arrayFunc`, function() {
 
     expect(key([console, obj])).to.equal('key-' + signature(['1', '2']));
   });
-
 });

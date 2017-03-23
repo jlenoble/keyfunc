@@ -1,17 +1,14 @@
 import isString from 'is-string';
 
-export default function strictFunc(stem) {
-
-  if (!isString(stem)) {
-    stem = '';
-  }
+export default function strictFunc (_stem) {
+  const stem = isString(_stem) ? _stem : '';
 
   return (stem => {
-    var counter = 0;
+    let counter = 0;
     const map = new WeakMap();
 
     return obj => {
-      var key = map.get(obj);
+      let key = map.get(obj);
 
       if (!key) {
         counter++;
@@ -29,5 +26,4 @@ but argument was: ${JSON.stringify(obj)}`);
       return key;
     };
   })(stem);
-
 };

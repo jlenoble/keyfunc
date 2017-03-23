@@ -2,9 +2,8 @@ import {expect} from 'chai';
 import signature from 'sig';
 import keyFunc from '../src/keyfunc';
 
-describe('Testing keyFunc', function() {
-
-  it(`Calling keyFunc('object')` , function() {
+describe('Testing keyFunc', function () {
+  it(`Calling keyFunc('object')`, function () {
     const key = keyFunc('object');
 
     expect(key(console)).to.equal('1');
@@ -29,7 +28,7 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc('literal')` , function() {
+  it(`Calling keyFunc('literal')`, function () {
     const key = keyFunc('literal');
 
     expect(key(console)).to.equal(signature(console));
@@ -42,7 +41,7 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc({property: 'id'})` , function() {
+  it(`Calling keyFunc({property: 'id'})`, function () {
     const key = keyFunc({property: 'id'});
 
     expect(key({id: 1})).to.equal(signature(1));
@@ -57,7 +56,7 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc('object', 'literal')` , function() {
+  it(`Calling keyFunc('object', 'literal')`, function () {
     const key = keyFunc('object', 'literal');
 
     expect(key(console, 'log')).to.equal(key(console, 'log'));
@@ -69,7 +68,7 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc({stem: 'id'}, {property: 'id'})` , function() {
+  it(`Calling keyFunc({stem: 'id'}, {property: 'id'})`, function () {
     const key = keyFunc({stem: 'id'}, {property: 'id'});
 
     expect(key(console, {id: 1})).to.equal(key(console, {id: 1}));
@@ -81,7 +80,7 @@ but argument was: "title"`);
       `Too many arguments, can't generate key`);
   });
 
-  it(`Calling keyFunc('array')` , function() {
+  it(`Calling keyFunc('array')`, function () {
     const key = keyFunc('array');
 
     const obj = {id: 1};
@@ -90,7 +89,7 @@ but argument was: "title"`);
     expect(key([console, obj])).to.equal(signature(['1', '2']));
   });
 
-  it(`Calling keyFunc('set')` , function() {
+  it(`Calling keyFunc('set')`, function () {
     const key = keyFunc('set');
 
     const obj = {id: 1};
@@ -98,5 +97,4 @@ but argument was: "title"`);
     expect(key([console, obj])).to.equal(key([obj, console]));
     expect(key([console, obj])).to.equal(signature(['1', '2']));
   });
-
 });

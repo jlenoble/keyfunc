@@ -5,15 +5,13 @@ import looseFunc from '../src/loosefunc';
 import propertyFunc from '../src/propertyfunc';
 import setFunc from '../src/setfunc';
 
-describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
-
+describe(`Testing arrayFunc with elementKeyFunc arg`, function () {
   [
     undefined,
-    'key-'
-  ].forEach(function(_key) {
-
+    'key-',
+  ].forEach(function (_key) {
     it(`Calling arrayFunc(${_key}, looseFunc())`,
-    function() {
+    function () {
       const key = arrayFunc(_key, looseFunc());
 
       expect(key([console])).to.equal(key([console]));
@@ -35,7 +33,7 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     });
 
     it(`Calling arrayFunc(${_key}, propertyFunc('id'))`,
-    function() {
+    function () {
       const key = arrayFunc(_key, propertyFunc('id'));
 
       const obj = {id: 1};
@@ -59,7 +57,7 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
     });
 
     it(`Calling arrayFunc(${_key}, arrayFunc())`,
-    function() {
+    function () {
       const key = arrayFunc(_key, arrayFunc());
 
       const o1 = {};
@@ -86,12 +84,12 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
       expect(key([obj2, obj])).to.equal((_key ? _key : '') +
         signature([
           signature(['1', '2']),
-          signature(['3', '1', '2']) // First key'ed was o2, then o3, then o1
+          signature(['3', '1', '2']), // First key'ed was o2, then o3, then o1
         ]));
     });
 
     it(`Calling arrayFunc(${_key}, setFunc())`,
-    function() {
+    function () {
       const key = arrayFunc(_key, setFunc());
 
       const o1 = {};
@@ -118,10 +116,8 @@ describe(`Testing arrayFunc with elementKeyFunc arg`, function() {
       expect(key([obj2, obj])).to.equal((_key ? _key : '') +
         signature([
           signature(['1', '2']),
-          signature(['1', '2', '3'])
+          signature(['1', '2', '3']),
         ]));
     });
-
   });
-
 });

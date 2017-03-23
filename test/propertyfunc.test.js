@@ -2,9 +2,8 @@ import {expect} from 'chai';
 import signature from 'sig';
 import propertyFunc from '../src/propertyfunc';
 
-describe('Testing propertyFunc', function() {
-
-  it(`Calling propertyFunc('id')` , function() {
+describe('Testing propertyFunc', function () {
+  it(`Calling propertyFunc('id')`, function () {
     const key = propertyFunc('id');
 
     expect(key({id: 1})).to.equal(signature(1));
@@ -16,7 +15,7 @@ describe('Testing propertyFunc', function() {
       `Can't generate key for object with no property 'id'`);
   });
 
-  it(`Calling propertyFunc('name', 'key-')` , function() {
+  it(`Calling propertyFunc('name', 'key-')`, function () {
     const key = propertyFunc('name', 'key-');
 
     expect(key({name: 1})).to.equal('key-' + signature(1));
@@ -27,5 +26,4 @@ describe('Testing propertyFunc', function() {
     expect(() => key(console)).to.throw(
       `Can't generate key for object with no property 'name'`);
   });
-
 });
