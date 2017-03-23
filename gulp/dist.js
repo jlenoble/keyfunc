@@ -1,16 +1,21 @@
 import gulp from 'gulp';
-import jscs from 'gulp-jscs';
+import eslint from 'gulp-eslint';
 import babel from 'gulp-babel';
 
-import {srcGlob, distDir} from './globs';
+import {srcGlob, allTestGlob, distDir} from './globs';
 
 export const dist = () => {
   return gulp.src(srcGlob)
-    .pipe(jscs())
-    .pipe(jscs.reporter())
-    .pipe(jscs.reporter('fail'))
+    .pipe(eslint())
+    .pipe(eslint.format())
     .pipe(babel())
     .pipe(gulp.dest(distDir));
 };
 
-gulp.task('dist', dist);
+export const lintTest = () => {
+  return gulp.src(allTestGlob)
+    .pipe(eslint())
+    .pipe(eslint.format());
+};
+
+gulp.task('dist', gulp.parallel(dist, lintTest));
