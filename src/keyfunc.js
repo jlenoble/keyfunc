@@ -1,107 +1,55 @@
-import isString from 'is-string';
-import objectFunc from './objectfunc';
-import propertyFunc from './propertyfunc';
-import signature from 'sig';
+import sig from 'sig';
 
-export default function keyFunc (...args) {
-  const func = _option => {
-    const option = isString(_option) ? {
-      type: _option,
-    } : _option;
+export class KeyFunc {
+  constructor (...hints) {
+    // Define helper property
+    Object.defineProperty(this, 'length', {value: hints.length});
 
-    if (option.optional) {
-      let _option = Object.assign({}, option);
-      delete _option.optional;
-      return (function (stem, key) {
-        return function (...args) {
-          if (args.length === 0 || (args.length === 1 &&
-            args[0] === undefined)) {
-            return stem + '0';
-          } else {
-            return key(...args);
-          }
-        };
-      }(_option.stem ? _option.stem : '', keyFunc(_option)));
-    }
-
-    if (option.property && !option.type) {
-      option.type = 'property';
-    }
-
-    if (option.sub) {
-      if (option.type === 'array') {
-        return (function (stem, key) {
-          return function (args) {
-            return stem + signature([key(...args)]);
-          };
-        }(option.stem ? option.stem : '', keyFunc(...option.sub)));
-      } else if (option.type === 'property') {
-        return propertyFunc(option.property, option.stem ? option.stem : '',
-          keyFunc(option.sub));
-      } else if (option.type === 'option') {
-        let keyObject = {};
-        Object.keys(option.sub).forEach(key => {
-          keyObject[key] = keyFunc(option.sub[key]);
-        });
-        return (function (stem, keyObject) {
-          return function (args) {
-            let res = {};
-            Object.keys(keyObject).forEach(key => {
-              res[key] = keyObject[key](args[key]);
-            });
-            return stem + signature(res);
-          };
-        }(option.stem ? option.stem : '', keyObject));
-      } // else ignore option sub
-    }
-
-    return objectFunc(option.type, option);
-  };
-
-  return (function (keyFuncs, _args) {
-    const max = keyFuncs.length - 1;
-    const args = _args;
-    let rest = 0;
-    let unordered = false;
-
-    while (rest <= max) {
-      if (args[rest].unordered) {
-        if (rest === 0 && args.length === 1) {
-          unordered = true;
-          args[rest].rest = true;
-        } else {
-          throw new Error(
-            `'unordered' option can only be used with a repeating single type`);
-        }
-      }
-      if (args[rest].rest) {
-        break;
-      }
-      rest++;
-    }
-
-    return function (...args) {
-      let keys = [];
-      args.forEach((arg, i) => {
-        if (i <= max) {
-          if (keyFuncs[i]) {
-            keys.push(keyFuncs[i](arg));
-          }
-        } else {
-          if (rest > max) {
-            throw new Error(`Too many arguments, can't generate key`);
-          }
-          if (keyFuncs[rest]) {
-            keys.push(keyFuncs[rest](arg));
-          }
-        }
+    if (this.length !== 1) {
+      // Delegate to sub instances if more than one hint
+      Object.defineProperty(this, 'keyFuncs', {
+        value: hints.map(hint => new KeyFunc(hint)),
       });
 
-      if (unordered) {
-        keys.sort();
-      }
+      // Original hints are formatted through sub instances
+      Object.defineProperty(this, 'hints', {
+        value: this.keyFuncs.map(keyFunc => keyFunc.hint),
+      });
+    } else {
+      // Format hint
+      const [hint] = hints;
+      Object.defineProperty(this, 'hint', {
+        value: this.formatHint(hint),
+      });
 
-      return keys.join('_');
-    };
-  })(args.map(func), args);
-};
+      // Make key function
+      Object.defineProperty(this, 'keyFunc', {
+        value: this.makeSingleKeyFunc(),
+      });
+    }
+  }
+
+  formatHint (hint) {
+    switch (typeof hint) {
+    case 'string':
+      return {type: hint};
+
+    default:
+      throw new TypeError(`Unhandled keyfunc hint: ${hint}`);
+    }
+  }
+
+  makeSingleKeyFunc () {
+    switch (this.hint.type) {
+    case 'literal':
+      return arg => sig(arg);
+
+    default:
+      throw new TypeError(`Unhandled keyfunc type: ${this.hint.type}`);
+    }
+  }
+}
+
+export default function keyfunc (...hints) {
+  return new KeyFunc(...hints).keyFunc;
+}
