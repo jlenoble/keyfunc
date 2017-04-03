@@ -16,4 +16,30 @@ describe(`Testing option ntimes`, function () {
     expect(key1(o1, o2, o3, o4, o5)).to.equal(key1(o1, o2, o3, o4, o5));
     expect(key1(o1, o2, o3, o4, o5)).to.equal(key2(o1, o2, o3, o4, o5));
   });
+
+  it(`Multi hints`,
+  function () {
+    const key1 = keyfunc({
+      type: 'object', ntimes: 2,
+    }, {
+      type: 'literal', ntimes: 3,
+    });
+
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+    const o3 = {id: 3};
+    const o4 = {id: 4};
+    const o5 = {id: 5};
+
+    expect(key1(o1, o2, o3, o4, o5)).to.equal(key1(o1, o2, o3, o4, o5));
+    expect(key1(o1, o2, o3, o4, o5)).to.equal(key1(o1, o2, o3, {id: 4}, o5));
+    expect(key1(o1, o2, o3, o4, {id: 5})).to.equal(
+      key1(o1, o2, o3, {id: 4}, o5));
+    expect(key1(o1, o2, o3, o4, o5)).not.to.equal(
+      key1(o1, {id: 2}, o3, o4, o5));
+
+    // !!! key1 and key2 use different schemes to generate their keys
+    const key2 = keyfunc('object', 'object', 'literal', 'literal', 'literal');
+    expect(key1(o1, o2, o3, o4, o5)).not.to.equal(key2(o1, o2, o3, o4, o5));
+  });
 });

@@ -13,9 +13,16 @@ export class KeyFunc {
       value: this.keyFuncs.map(keyFunc => keyFunc.hint),
     });
 
+    // Compute length
+    Object.defineProperty(this, 'length', {
+      value: this.keyFuncs.reduce((length, keyFunc) => {
+        return length + keyFunc.length;
+      }, 0),
+    });
+
     // Make key function
     Object.defineProperty(this, 'keyfunc', {
-      value: this.makeCombinedKeyfunc(this.keyFuncs),
+      value: this._makeCombinedKeyfunc(this.keyFuncs),
     });
   }
 
@@ -50,6 +57,21 @@ export class KeyFunc {
     return true;
   }
 
+  _makeCombinedKeyfunc (keyFuncs) {
+    return (...args) => {
+      if (this.length !== args.length) {
+        throw new Error(`Inconsistent number of arguments, can't generate key`);
+      }
+
+      let n = 0;
+      return sig(keyFuncs.map(keyFunc => {
+        const slice = args.slice(n, n + keyFunc.length);
+        n += keyFunc.length;
+        return keyFunc.keyfunc(...slice);
+      }).join(''));
+    };
+  }
+
   constructor (...hints) {
     if (hints.length > 1) {
       this._delegateToChildren(hints);
@@ -63,6 +85,11 @@ export class KeyFunc {
     });
 
     if (!this._hasOptionNTimes()) {
+      // Set default length
+      Object.defineProperty(this, 'length', {
+        value: 1,
+      });
+
       // Make key function
       Object.defineProperty(this, 'keyfunc', {
         value: this.makeSingleKeyfunc(this.hint),
@@ -99,19 +126,6 @@ export class KeyFunc {
     default:
       throw new TypeError(`Unhandled keyfunc type: ${type}`);
     }
-  }
-
-  makeCombinedKeyfunc (keyFuncs) {
-    const keyfuncs = keyFuncs
-      .map(keyFunc => keyFunc.keyfunc);
-
-    return (...args) => {
-      if (keyfuncs.length !== args.length) {
-        throw new Error(`Inconsistent number of arguments, can't generate key`);
-      }
-
-      return sig(keyfuncs.map((keyfunc, i) => keyfunc(args[i])).join(''));
-    };
   }
 }
 
