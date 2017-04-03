@@ -1,11 +1,12 @@
 import sig from 'sig';
+import objectFunc from './object-func';
 
 export class KeyFunc {
   constructor (...hints) {
     // Define helper property
     Object.defineProperty(this, 'length', {value: hints.length});
 
-    if (this.length !== 1) {
+    if (this.length > 1) {
       // Delegate to sub instances if more than one hint
       Object.defineProperty(this, 'keyFuncs', {
         value: hints.map(hint => new KeyFunc(hint)),
@@ -39,6 +40,9 @@ export class KeyFunc {
         return hint;
       }
 
+    case 'undefined':
+      return {type: 'object'};
+
     default:
       throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
     }
@@ -48,6 +52,9 @@ export class KeyFunc {
     switch (this.hint.type) {
     case 'literal':
       return arg => sig(arg);
+
+    case 'object':
+      return objectFunc();
 
     default:
       throw new TypeError(`Unhandled keyfunc type: ${this.hint.type}`);
