@@ -2,37 +2,39 @@ import sig from 'sig';
 import objectFunc from './object-func';
 
 export class KeyFunc {
+  _delegateToChildren (hints) {
+    // Delegate to sub instances if more than one hint
+    Object.defineProperty(this, 'keyFuncs', {
+      value: hints.map(hint => new KeyFunc(hint)),
+    });
+
+    // Original hints are formatted through sub instances
+    Object.defineProperty(this, 'hints', {
+      value: this.keyFuncs.map(keyFunc => keyFunc.hint),
+    });
+
+    // Make key function
+    Object.defineProperty(this, 'keyfunc', {
+      value: this.makeCombinedKeyfunc(this.keyFuncs),
+    });
+  }
+
   constructor (...hints) {
-    // Define helper property
-    Object.defineProperty(this, 'length', {value: hints.length});
-
-    if (this.length > 1) {
-      // Delegate to sub instances if more than one hint
-      Object.defineProperty(this, 'keyFuncs', {
-        value: hints.map(hint => new KeyFunc(hint)),
-      });
-
-      // Original hints are formatted through sub instances
-      Object.defineProperty(this, 'hints', {
-        value: this.keyFuncs.map(keyFunc => keyFunc.hint),
-      });
-
-      // Make key function
-      Object.defineProperty(this, 'keyfunc', {
-        value: this.makeCombinedKeyfunc(this.keyFuncs),
-      });
-    } else {
-      // Format hint
-      const [hint] = hints;
-      Object.defineProperty(this, 'hint', {
-        value: this.formatHint(hint),
-      });
-
-      // Make key function
-      Object.defineProperty(this, 'keyfunc', {
-        value: this.makeSingleKeyfunc(this.hint),
-      });
+    if (hints.length > 1) {
+      this._delegateToChildren(hints);
+      return;
     }
+
+    // Format hint
+    const [hint] = hints;
+    Object.defineProperty(this, 'hint', {
+      value: this.formatHint(hint),
+    });
+
+    // Make key function
+    Object.defineProperty(this, 'keyfunc', {
+      value: this.makeSingleKeyfunc(this.hint),
+    });
   }
 
   formatHint (hint) {
