@@ -106,10 +106,11 @@ export class KeyFunc {
     case 'string':
       if (!hint.includes(':')) {
         return {type: hint};
-      }
-      const [type, ...hints] = hint.split(':');
-      return {
-        type, subhint: hints.join(''),
+      } else {
+        const [type, ...hints] = hint.split(':');
+        return {
+          type, subhint: hints.join(''),
+        };
       }
 
     case 'object':
