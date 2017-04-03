@@ -15,6 +15,12 @@ describe(`Testing option ntimes`, function () {
 
     expect(key1(o1, o2, o3, o4, o5)).to.equal(key1(o1, o2, o3, o4, o5));
     expect(key1(o1, o2, o3, o4, o5)).to.equal(key2(o1, o2, o3, o4, o5));
+
+    // The number of arguments must be exactly ntimes
+    expect(() => key1(o1, o2, o3, o4)).to.throw(Error,
+      `Inconsistent number of arguments, can't generate key`);
+    expect(() => key1(o1, o2, o3, o4, o5, o1)).to.throw(Error,
+      `Inconsistent number of arguments, can't generate key`);
   });
 
   it(`Multi hints`,
