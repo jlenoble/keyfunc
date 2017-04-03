@@ -1,6 +1,7 @@
 import sig from 'sig';
 import objectFunc from './object-func';
 import arrayFunc from './array-func';
+import propertyFunc from './property-func';
 
 export class KeyFunc {
   _delegateToChildren (hints) {
@@ -109,7 +110,7 @@ export class KeyFunc {
       } else {
         const [type, ...hints] = hint.split(':');
         return {
-          type, subhint: hints.join(''),
+          type, subhint: hints.join(':'),
         };
       }
 
@@ -134,6 +135,9 @@ export class KeyFunc {
 
     case 'array':
       return arrayFunc(keyfunc(subhint));
+
+    case 'property':
+      return propertyFunc(subhint);
 
     default:
       throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
