@@ -1,5 +1,6 @@
 import sig from 'sig';
 import objectFunc from './object-func';
+import arrayFunc from './array-func';
 
 export class KeyFunc {
   _delegateToChildren (hints) {
@@ -103,7 +104,13 @@ export class KeyFunc {
       return {type: 'object'};
 
     case 'string':
-      return {type: hint};
+      if (!hint.includes(':')) {
+        return {type: hint};
+      }
+      const [type, ...hints] = hint.split(':');
+      return {
+        type, subhint: hints.join(''),
+      }
 
     case 'object':
       if (hint.type) {
@@ -116,7 +123,7 @@ export class KeyFunc {
     }
   }
 
-  makeSingleKeyfunc ({type}) {
+  makeSingleKeyfunc ({type, subhint}) {
     switch (type) {
     case 'literal':
       return arg => sig(arg);
@@ -124,8 +131,11 @@ export class KeyFunc {
     case 'object':
       return objectFunc();
 
+    case 'array':
+      return arrayFunc(keyfunc(subhint));
+
     default:
-      throw new TypeError(`Unhandled keyfunc type: ${type}`);
+      throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
     }
   }
 }
