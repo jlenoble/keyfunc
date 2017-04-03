@@ -19,6 +19,37 @@ export class KeyFunc {
     });
   }
 
+  _hasOptionNTimes () {
+    let {ntimes} = this.hint;
+
+    if (ntimes === undefined) {
+      return false;
+    }
+
+    if (typeof ntimes !== 'number') {
+      throw new TypeError(`Not a number: ${JSON.stringify(ntimes)}`);
+    }
+
+    ntimes = parseInt(ntimes, 10);
+
+    if (ntimes === 1) {
+      return false; // Useless option
+    }
+
+    if (ntimes === 0) {
+      throw new Error('ntimes is 0, not handled yet');
+    }
+
+    const hint = Object.assign({}, this.hint);
+    delete hint.ntimes;
+
+    const hints = new Array(ntimes);
+    hints.fill(hint);
+
+    this._delegateToChildren(hints);
+    return true;
+  }
+
   constructor (...hints) {
     if (hints.length > 1) {
       this._delegateToChildren(hints);
@@ -31,10 +62,12 @@ export class KeyFunc {
       value: this.formatHint(hint),
     });
 
-    // Make key function
-    Object.defineProperty(this, 'keyfunc', {
-      value: this.makeSingleKeyfunc(this.hint),
-    });
+    if (!this._hasOptionNTimes()) {
+      // Make key function
+      Object.defineProperty(this, 'keyfunc', {
+        value: this.makeSingleKeyfunc(this.hint),
+      });
+    }
   }
 
   formatHint (hint) {
