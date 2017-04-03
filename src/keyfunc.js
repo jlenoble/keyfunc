@@ -99,6 +99,9 @@ export class KeyFunc {
 
   formatHint (hint) {
     switch (typeof hint) {
+    case 'undefined':
+      return {type: 'object'};
+
     case 'string':
       return {type: hint};
 
@@ -106,9 +109,7 @@ export class KeyFunc {
       if (hint.type) {
         return hint;
       }
-
-    case 'undefined':
-      return {type: 'object'};
+    // FALL THROUGH !
 
     default:
       throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
