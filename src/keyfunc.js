@@ -34,8 +34,13 @@ export class KeyFunc {
     case 'string':
       return {type: hint};
 
+    case 'object':
+      if (hint.type) {
+        return hint;
+      }
+
     default:
-      throw new TypeError(`Unhandled keyfunc hint: ${hint}`);
+      throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
     }
   }
 
