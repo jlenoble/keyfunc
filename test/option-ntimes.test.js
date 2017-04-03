@@ -23,8 +23,7 @@ describe(`Testing option ntimes`, function () {
       `Inconsistent number of arguments, can't generate key`);
   });
 
-  it(`Multi hints`,
-  function () {
+  it(`Multi hints`, function () {
     const key1 = keyfunc({
       type: 'object', ntimes: 2,
     }, {
