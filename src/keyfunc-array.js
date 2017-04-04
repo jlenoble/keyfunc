@@ -4,7 +4,7 @@ import removeDuplicates from './remove-duplicates';
 
 export default function arrayFunc (elementKeyfunc = objectFunc(),
 options = {}) {
-  const {unordered, unique} = options;
+  const {unordered, unique, spread} = options;
 
   // used to be array => sig(array.map(elementKeyfunc))
   // but it breaks when elementKeyfunc is defined with a rest operator
@@ -12,7 +12,13 @@ options = {}) {
   // and elementKeyFunc may treat those as arg0, arg1, arg2 in some loop
   return array => {
     try {
-      let arr = array.map(arg => {
+      let arr = array;
+
+      if (spread) {
+        return sig([elementKeyfunc(...arr)]);
+      }
+
+      arr = arr.map(arg => {
         return elementKeyfunc(arg);
       });
 
@@ -26,7 +32,7 @@ options = {}) {
 
       return sig(arr);
     } catch (e) {
-      if (e.message.match(/array.map is not a function/)) {
+      if (e.message.match(/arr.map is not a function/)) {
         throw new TypeError(`Function can only generate keys for ${unique ?
         'sets' : 'arrays'}, but argument was: ${JSON.stringify(array)}`);
       }

@@ -24,7 +24,10 @@ export const formatOptionNTimes = ({ntimes}) => {
 
 export const formatOptionSub = (sub, typesuffix) => {
   if (Array.isArray(sub)) {
-    return;
+    return {
+      elementHints: sub,
+      arrayHint: {spread: true},
+    };
   }
 
   if (isString(sub)) {
@@ -46,13 +49,16 @@ export const formatOptionSub = (sub, typesuffix) => {
     const {unordered, unique} = sub;
     const arrayHint = {unordered, unique};
 
-    const elementHint = Object.assign({
+    let elementHints = Object.assign({
       type: typesuffix || 'object',
     }, sub);
-    delete elementHint.unordered;
-    delete elementHint.unique;
 
-    return {elementHint, arrayHint};
+    delete elementHints.unordered;
+    delete elementHints.unique;
+
+    elementHints = [elementHints];
+
+    return {elementHints, arrayHint};
   }
 
   throw new TypeError(`Unhandled option sub ${JSON.stringify(sub)}`);
@@ -87,6 +93,10 @@ export const formatHint = hint => {
       if (_hint.typesuffix === '') {
         delete _hint.typesuffix;
       }
+      break;
+    }
+    if (hint.property) { // Shortcut {property: 'id'}
+      _hint = Object.assign({type: 'property'}, hint);
       break;
     }
   // else FALL THROUGH !

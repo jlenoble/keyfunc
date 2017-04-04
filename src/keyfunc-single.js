@@ -23,7 +23,7 @@ export default function singleFunc ({
   case 'array':
     if (sub) {
       const hint = formatOptionSub(sub, typesuffix);
-      kfnc = arrayFunc(keyfunc(hint.elementHint), hint.arrayHint);
+      kfnc = arrayFunc(keyfunc(...hint.elementHints), hint.arrayHint);
     } else {
       // Shortcut used: 'array[:typesuffix]'
       kfnc = arrayFunc(keyfunc(typesuffix));
@@ -33,7 +33,7 @@ export default function singleFunc ({
   case 'set':
     if (sub) {
       const hint = formatOptionSub(sub, typesuffix);
-      kfnc = arrayFunc(keyfunc(hint.elementHint), Object.assign({
+      kfnc = arrayFunc(keyfunc(...hint.elementHints), Object.assign({
         unordered: true, unique: true}, hint.arrayHint));
     } else {
       // Shortcut used: 'set[:typesuffix]'
