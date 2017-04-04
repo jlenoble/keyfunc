@@ -150,11 +150,12 @@ export class KeyFunc {
     }
 
     return (...args) => {
-      // Single key functions must take 1 argument for consistency
-      if (args.length !== 1) {
+      // By default, single key functions must take 1 argument
+      if (args.length === 0 || args.length !== 1 && !this.hint.repeat) {
         throw new Error(`Inconsistent number of arguments, can't generate key`);
       }
-      return kfnc(...args);
+      const keys = args.map(arg => kfnc(arg));
+      return keys.length === 1 ? keys[0] : sig(keys.join(''));
     };
   }
 }
