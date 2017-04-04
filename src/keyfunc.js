@@ -2,6 +2,7 @@ import sig from 'sig';
 import objectFunc from './object-func';
 import arrayFunc from './array-func';
 import propertyFunc from './property-func';
+import {formatHint} from './format-hint';
 
 export class KeyFunc {
   _delegateToChildren (hints) {
@@ -52,7 +53,7 @@ export class KeyFunc {
     // Format hint
     const [hint] = hints;
     Object.defineProperty(this, 'hint', {
-      value: this.formatHint(hint),
+      value: formatHint(hint),
     });
 
     if (!this.hint.ntimes) {
@@ -75,68 +76,6 @@ export class KeyFunc {
 
       this._delegateToChildren(_hints);
     }
-  }
-
-  formatHint (hint) {
-    let _hint;
-
-    switch (typeof hint) {
-    case 'undefined':
-      _hint = {type: 'object'};
-      break;
-
-    case 'string':
-      if (!hint.includes(':')) {
-        _hint = {type: hint};
-      } else {
-        const [type, ...hints] = hint.split(':');
-        _hint = {
-          type, subhint: hints.join(':'),
-        };
-      }
-      break;
-
-    case 'object':
-      if (hint.type) {
-        _hint = hint;
-        break;
-      }
-    // FALL THROUGH !
-
-    default:
-      throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
-    }
-
-    _hint.ntimes = this.formatOptionNTimes(_hint);
-
-    if (_hint.unordered) {
-      // By default, if args are unordered, then their number is unbound
-      _hint.repeat = true;
-    }
-
-    return _hint;
-  }
-
-  formatOptionNTimes ({ntimes}) {
-    if (ntimes === undefined) {
-      return;
-    }
-
-    if (typeof ntimes !== 'number') {
-      throw new TypeError(`Not a number: ${JSON.stringify(ntimes)}`);
-    }
-
-    let _ntimes = parseInt(ntimes, 10);
-
-    if (ntimes === 1) {
-      return; // Useless option
-    }
-
-    if (ntimes === 0) {
-      throw new Error('Option ntimes set, but is 0, not handled yet');
-    }
-
-    return _ntimes;
   }
 
   makeSingleKeyfunc ({type, subhint, repeat, unordered}) {
