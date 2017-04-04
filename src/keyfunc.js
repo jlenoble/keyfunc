@@ -56,7 +56,7 @@ export class KeyFunc {
       value: formatHint(hint),
     });
 
-    if (!this.hint.ntimes) {
+    if (!this.hint.ntimes || this.hint.unordered) {
       // Set default length
       Object.defineProperty(this, 'length', {
         value: 1,
@@ -69,7 +69,7 @@ export class KeyFunc {
     } else {
       // Expand ntimes and delegate to children
       const hint = Object.assign({}, this.hint);
-      delete hint.ntimes; // Protect against Max call stack size
+      delete hint.ntimes; // Protect against Max call stack size error
 
       const _hints = new Array(this.hint.ntimes);
       _hints.fill(hint);
@@ -78,7 +78,7 @@ export class KeyFunc {
     }
   }
 
-  makeSingleKeyfunc ({type, subhint, repeat, unordered}) {
+  makeSingleKeyfunc ({type, subhint, repeat, unordered, ntimes}) {
     let kfnc;
 
     switch (type) {
@@ -104,7 +104,9 @@ export class KeyFunc {
 
     return (...args) => {
       // By default, single key functions must take 1 argument
-      if (args.length === 0 || args.length !== 1 && !repeat) {
+      // but they can be used repeatedly, thus the filtering below
+      if (args.length === 0 || !repeat && args.length !== ntimes &&
+        args.length !== 1) { // ntimes can be undefined, so check on 1 too
         throw new Error(`Inconsistent number of arguments, can't generate key`);
       }
 
