@@ -34,7 +34,7 @@ export const formatHint = hint => {
     } else {
       const [type, ...hints] = hint.split(':');
       _hint = {
-        type, subhint: hints.join(':'),
+        type, typesuffix: hints.join(':'),
       };
     }
     break;

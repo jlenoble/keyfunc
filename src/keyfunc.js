@@ -97,7 +97,7 @@ export class KeyFunc {
     }
   }
 
-  makeSingleKeyfunc ({type, subhint, repeat, unordered, ntimes, unique}) {
+  makeSingleKeyfunc ({type, typesuffix, repeat, unordered, ntimes, unique}) {
     let kfnc;
 
     switch (type) {
@@ -110,11 +110,11 @@ export class KeyFunc {
       break;
 
     case 'array':
-      kfnc = arrayFunc(keyfunc(subhint));
+      kfnc = arrayFunc(keyfunc(typesuffix));
       break;
 
     case 'property':
-      kfnc = propertyFunc(subhint);
+      kfnc = propertyFunc(typesuffix);
       break;
 
     case 'ignore':
