@@ -1,7 +1,7 @@
 import sig from 'sig';
 import objectFunc from './keyfunc-object';
 import arrayFunc from './keyfunc-array';
-import propertyFunc from './property-func';
+import propertyFunc from './keyfunc-property';
 import removeDuplicates from './remove-duplicates';
 
 export default function singleFunc ({
