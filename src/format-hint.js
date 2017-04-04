@@ -1,3 +1,5 @@
+import isString from 'is-string';
+
 export const formatOptionNTimes = ({ntimes}) => {
   if (ntimes === undefined) {
     return;
@@ -18,6 +20,42 @@ export const formatOptionNTimes = ({ntimes}) => {
   }
 
   return _ntimes;
+};
+
+export const formatOptionSub = (sub, typesuffix) => {
+  if (Array.isArray(sub)) {
+    return;
+  }
+
+  if (isString(sub)) {
+    if (typesuffix !== undefined && sub != typesuffix) {
+      throw new Error(`Incompatible options: sub:${
+        sub} and typesuffix:${typesuffix}`);
+    }
+
+    return;
+  }
+
+  if (typeof sub === 'object') {
+    if (typesuffix !== undefined && sub.type !== undefined &&
+      sub.type != typesuffix) {
+      throw new Error(`Incompatible options: sub:${
+        sub} and typesuffix:${typesuffix}`);
+    }
+
+    const {unordered, unique} = sub;
+    const arrayHint = {unordered, unique};
+
+    const elementHint = Object.assign({
+      type: typesuffix || 'object',
+    }, sub);
+    delete elementHint.unordered;
+    delete elementHint.unique;
+
+    return {elementHint, arrayHint};
+  }
+
+  throw new TypeError(`Unhandled option sub ${JSON.stringify(sub)}`);
 };
 
 export const splitHint = _hint => {

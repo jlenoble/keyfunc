@@ -3,9 +3,10 @@ import objectFunc from './keyfunc-object';
 import arrayFunc from './keyfunc-array';
 import propertyFunc from './keyfunc-property';
 import removeDuplicates from './remove-duplicates';
+import {formatOptionSub} from './format-hint';
 
 export default function singleFunc ({
-  type, property, typesuffix,
+  type, property, typesuffix, sub,
   repeat, unordered, ntimes, unique,
 }, keyfunc) { // Recursive generation
   let kfnc;
@@ -20,7 +21,13 @@ export default function singleFunc ({
     break;
 
   case 'array':
-    kfnc = arrayFunc(keyfunc(typesuffix));
+    if (sub) {
+      const hint = formatOptionSub(sub, typesuffix);
+      kfnc = arrayFunc(keyfunc(hint.elementHint), hint.arrayHint);
+    } else {
+      // Shortcut used: 'array[:typesuffix]'
+      kfnc = arrayFunc(keyfunc(typesuffix));
+    }
     break;
 
   case 'set':
