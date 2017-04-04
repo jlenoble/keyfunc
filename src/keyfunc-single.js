@@ -31,7 +31,14 @@ export default function singleFunc ({
     break;
 
   case 'set':
-    kfnc = arrayFunc(keyfunc(typesuffix), {unordered: true, unique: true});
+    if (sub) {
+      const hint = formatOptionSub(sub, typesuffix);
+      kfnc = arrayFunc(keyfunc(hint.elementHint), Object.assign({
+        unordered: true, unique: true}, hint.arrayHint));
+    } else {
+      // Shortcut used: 'set[:typesuffix]'
+      kfnc = arrayFunc(keyfunc(typesuffix), {unordered: true, unique: true});
+    }
     break;
 
   case 'property':
