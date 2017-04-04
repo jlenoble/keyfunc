@@ -1,5 +1,5 @@
 import sig from 'sig';
-import objectFunc from './object-func';
+import objectFunc from './keyfunc-object';
 
 export default function arrayFunc (elementKeyfunc = objectFunc()) {
   return array => {
@@ -18,5 +18,5 @@ but argument was: ${JSON.stringify(array)}`);
       }
       throw e;
     }
-  }
+  };
 };
