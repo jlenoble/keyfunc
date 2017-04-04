@@ -20,6 +20,13 @@ export const formatOptionNTimes = ({ntimes}) => {
   return _ntimes;
 };
 
+export const splitHint = _hint => {
+  let [hint, ...hints] = _hint.split(':');
+  return {
+    hint, hintSuffix: hints.join(':'),
+  };
+};
+
 export const formatHint = hint => {
   let _hint;
 
@@ -29,14 +36,11 @@ export const formatHint = hint => {
     break;
 
   case 'string':
-    if (!hint.includes(':')) {
-      _hint = {type: hint};
-    } else {
-      const [type, ...hints] = hint.split(':');
-      _hint = {
-        type, typesuffix: hints.join(':'),
-      };
-    }
+    _hint = splitHint(hint);
+    _hint = _hint.hintSuffix ? {
+      type: _hint.hint,
+      typesuffix: _hint.hintSuffix,
+    } : {type: _hint.hint};
     break;
 
   case 'object':
