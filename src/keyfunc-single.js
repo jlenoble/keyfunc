@@ -2,6 +2,7 @@ import sig from 'sig';
 import objectFunc from './keyfunc-object';
 import arrayFunc from './keyfunc-array';
 import propertyFunc from './keyfunc-property';
+import optionFunc from './keyfunc-option';
 import removeDuplicates from './remove-duplicates';
 import {formatOptionSub} from './format-hint';
 
@@ -58,6 +59,10 @@ export default function singleFunc ({
         property: typesuffix,
       });
     }
+    break;
+
+  case 'option':
+    kfnc = optionFunc(sub, keyfunc);
     break;
 
   case 'ignore':
