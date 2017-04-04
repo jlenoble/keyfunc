@@ -28,37 +28,6 @@ export class KeyFunc {
     });
   }
 
-  _hasOptionNTimes () {
-    let {ntimes} = this.hint;
-
-    if (ntimes === undefined) {
-      return false;
-    }
-
-    if (typeof ntimes !== 'number') {
-      throw new TypeError(`Not a number: ${JSON.stringify(ntimes)}`);
-    }
-
-    ntimes = parseInt(ntimes, 10);
-
-    if (ntimes === 1) {
-      return false; // Useless option
-    }
-
-    if (ntimes === 0) {
-      throw new Error('ntimes is 0, not handled yet');
-    }
-
-    const hint = Object.assign({}, this.hint);
-    delete hint.ntimes;
-
-    const hints = new Array(ntimes);
-    hints.fill(hint);
-
-    this._delegateToChildren(hints);
-    return true;
-  }
-
   _makeCombinedKeyfunc (keyFuncs) {
     return (...args) => {
       if (this.length !== args.length) {
@@ -86,7 +55,7 @@ export class KeyFunc {
       value: this.formatHint(hint),
     });
 
-    if (!this._hasOptionNTimes()) {
+    if (!this.hint.ntimes) {
       // Set default length
       Object.defineProperty(this, 'length', {
         value: 1,
@@ -96,6 +65,15 @@ export class KeyFunc {
       Object.defineProperty(this, 'keyfunc', {
         value: this.makeSingleKeyfunc(this.hint),
       });
+    } else {
+      // Expand ntimes and delegate to children
+      const hint = Object.assign({}, this.hint);
+      delete hint.ntimes; // Protect against Max call stack size
+
+      const _hints = new Array(this.hint.ntimes);
+      _hints.fill(hint);
+
+      this._delegateToChildren(_hints);
     }
   }
 
@@ -129,12 +107,36 @@ export class KeyFunc {
       throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
     }
 
+    _hint.ntimes = this.formatOptionNTimes(_hint);
+
     if (_hint.unordered) {
       // By default, if args are unordered, then their number is unbound
       _hint.repeat = true;
     }
 
     return _hint;
+  }
+
+  formatOptionNTimes ({ntimes}) {
+    if (ntimes === undefined) {
+      return;
+    }
+
+    if (typeof ntimes !== 'number') {
+      throw new TypeError(`Not a number: ${JSON.stringify(ntimes)}`);
+    }
+
+    let _ntimes = parseInt(ntimes, 10);
+
+    if (ntimes === 1) {
+      return; // Useless option
+    }
+
+    if (ntimes === 0) {
+      throw new Error('Option ntimes set, but is 0, not handled yet');
+    }
+
+    return _ntimes;
   }
 
   makeSingleKeyfunc ({type, subhint, repeat, unordered}) {
