@@ -3,6 +3,7 @@ import objectFunc from './object-func';
 import arrayFunc from './array-func';
 import propertyFunc from './property-func';
 import {formatHint} from './format-hint';
+import removeDuplicates from './remove-duplicates';
 
 export class KeyFunc {
   _delegateToChildren (hints) {
@@ -78,7 +79,7 @@ export class KeyFunc {
     }
   }
 
-  makeSingleKeyfunc ({type, subhint, repeat, unordered, ntimes}) {
+  makeSingleKeyfunc ({type, subhint, repeat, unordered, ntimes, unique}) {
     let kfnc;
 
     switch (type) {
@@ -110,7 +111,11 @@ export class KeyFunc {
         throw new Error(`Inconsistent number of arguments, can't generate key`);
       }
 
-      const keys = args.map(arg => kfnc(arg));
+      let keys = args.map(arg => kfnc(arg));
+
+      if (unique) {
+        keys = removeDuplicates(...keys);
+      }
 
       if (keys.length === 1) {
         return keys[0];

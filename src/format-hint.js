@@ -52,7 +52,7 @@ export const formatHint = hint => {
 
   _hint.ntimes = formatOptionNTimes(_hint);
 
-  if (_hint.unordered && _hint.ntimes === undefined) {
+  if ((_hint.unordered || _hint.unique) && _hint.ntimes === undefined) {
     // By default, if args are unordered, then their number is unbound,
     // unless of course it is specified!
     _hint.repeat = true;
