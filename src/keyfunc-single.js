@@ -1,6 +1,6 @@
 import sig from 'sig';
 import objectFunc from './object-func';
-import arrayFunc from './array-func';
+import arrayFunc from './keyfunc-array';
 import propertyFunc from './property-func';
 import removeDuplicates from './remove-duplicates';
 
