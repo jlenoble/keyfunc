@@ -17,11 +17,22 @@ export class KeyFunc {
       value: this.keyFuncs.map(keyFunc => keyFunc.hint),
     });
 
-    // Compute length
-    Object.defineProperty(this, 'length', {
-      value: this.keyFuncs.reduce((length, keyFunc) => {
-        return length + keyFunc.length;
-      }, 0),
+    // Compute length and trailingIgnores
+    Object.defineProperties(this, {
+      length: {
+        value: this.keyFuncs.reduce((length, keyFunc) => {
+          return length + keyFunc.length;
+        }, 0),
+      },
+      trailingIgnores: {
+        value: this.keyFuncs.reduce((ignores,
+          {length, trailingIgnores}) => {
+          if (length === trailingIgnores) {
+            return ignores + trailingIgnores;
+          }
+          return trailingIgnores;
+        }, 0),
+      },
     });
 
     // Make key function
@@ -32,7 +43,9 @@ export class KeyFunc {
 
   _makeCombinedKeyfunc (keyFuncs) {
     return (...args) => {
-      if (this.length !== args.length) {
+      if (this.length !== args.length &&
+        (this.length - this.trailingIgnores > args.length ||
+        this.length < args.length)) {
         throw new Error(`Inconsistent number of arguments, can't generate key`);
       }
 
@@ -58,9 +71,14 @@ export class KeyFunc {
     });
 
     if (!this.hint.ntimes || this.hint.unordered) {
-      // Set default length
-      Object.defineProperty(this, 'length', {
-        value: 1,
+      // Set default length and trailingIgnores
+      Object.defineProperties(this, {
+        length: {
+          value: 1,
+        },
+        trailingIgnores: {
+          value: this.hint.type === 'ignore' ? 1 : 0,
+        },
       });
 
       // Make key function
@@ -99,11 +117,19 @@ export class KeyFunc {
       kfnc = propertyFunc(subhint);
       break;
 
+    case 'ignore':
+    // Rely on kfnc remains undefined
+      break;
+
     default:
       throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
     }
 
     return (...args) => {
+      if (!kfnc) {
+        return;
+      }
+
       // By default, single key functions must take 1 argument
       // but they can be used repeatedly, thus the filtering below
       if (args.length === 0 || !repeat && args.length !== ntimes &&
