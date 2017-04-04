@@ -74,57 +74,6 @@ export class KeyFunc {
     };
   }
 
-  constructor (...hints) {
-    if (hints.length > 1) {
-      this._delegateToChildren(hints);
-      return;
-    }
-
-    // Format hint
-    const [hint] = hints;
-    Object.defineProperty(this, 'hint', {
-      value: this.formatHint(hint),
-    });
-
-    if (!this._hasOptionNTimes()) {
-      // Set default length
-      Object.defineProperty(this, 'length', {
-        value: 1,
-      });
-
-      // Make key function
-      Object.defineProperty(this, 'keyfunc', {
-        value: this.makeSingleKeyfunc(this.hint),
-      });
-    }
-  }
-
-  formatHint (hint) {
-    switch (typeof hint) {
-    case 'undefined':
-      return {type: 'object'};
-
-    case 'string':
-      if (!hint.includes(':')) {
-        return {type: hint};
-      } else {
-        const [type, ...hints] = hint.split(':');
-        return {
-          type, subhint: hints.join(':'),
-        };
-      }
-
-    case 'object':
-      if (hint.type) {
-        return hint;
-      }
-    // FALL THROUGH !
-
-    default:
-      throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
-    }
-  }
-
   makeSingleKeyfunc ({type, subhint}) {
     let kfnc;
 
@@ -154,9 +103,79 @@ export class KeyFunc {
       if (args.length === 0 || args.length !== 1 && !this.hint.repeat) {
         throw new Error(`Inconsistent number of arguments, can't generate key`);
       }
+
       const keys = args.map(arg => kfnc(arg));
-      return keys.length === 1 ? keys[0] : sig(keys.join(''));
+
+      if (keys.length === 1) {
+        return keys[0];
+      }
+
+      return this.hint.unordered ? sig(keys.sort().join('')) :
+        sig(keys.join(''));
     };
+  }
+
+  constructor (...hints) {
+    if (hints.length > 1) {
+      this._delegateToChildren(hints);
+      return;
+    }
+
+    // Format hint
+    const [hint] = hints;
+    Object.defineProperty(this, 'hint', {
+      value: this.formatHint(hint),
+    });
+
+    if (!this._hasOptionNTimes()) {
+      // Set default length
+      Object.defineProperty(this, 'length', {
+        value: 1,
+      });
+
+      // Make key function
+      Object.defineProperty(this, 'keyfunc', {
+        value: this.makeSingleKeyfunc(this.hint),
+      });
+    }
+  }
+
+  formatHint (hint) {
+    let _hint;
+
+    switch (typeof hint) {
+    case 'undefined':
+      _hint = {type: 'object'};
+      break;
+
+    case 'string':
+      if (!hint.includes(':')) {
+        _hint = {type: hint};
+      } else {
+        const [type, ...hints] = hint.split(':');
+        _hint = {
+          type, subhint: hints.join(':'),
+        };
+      }
+      break;
+
+    case 'object':
+      if (hint.type) {
+        _hint = hint;
+        break;
+      }
+    // FALL THROUGH !
+
+    default:
+      throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
+    }
+
+    if (_hint.unordered) {
+      // By default, if args are unordered, then their number is unbound
+      _hint.repeat = true;
+    }
+
+    return _hint;
   }
 }
 
