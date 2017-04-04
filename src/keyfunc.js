@@ -74,47 +74,6 @@ export class KeyFunc {
     };
   }
 
-  makeSingleKeyfunc ({type, subhint}) {
-    let kfnc;
-
-    switch (type) {
-    case 'literal':
-      kfnc = arg => sig(arg);
-      break;
-
-    case 'object':
-      kfnc = objectFunc();
-      break;
-
-    case 'array':
-      kfnc = arrayFunc(keyfunc(subhint));
-      break;
-
-    case 'property':
-      kfnc = propertyFunc(subhint);
-      break;
-
-    default:
-      throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
-    }
-
-    return (...args) => {
-      // By default, single key functions must take 1 argument
-      if (args.length === 0 || args.length !== 1 && !this.hint.repeat) {
-        throw new Error(`Inconsistent number of arguments, can't generate key`);
-      }
-
-      const keys = args.map(arg => kfnc(arg));
-
-      if (keys.length === 1) {
-        return keys[0];
-      }
-
-      return this.hint.unordered ? sig(keys.sort().join('')) :
-        sig(keys.join(''));
-    };
-  }
-
   constructor (...hints) {
     if (hints.length > 1) {
       this._delegateToChildren(hints);
@@ -176,6 +135,47 @@ export class KeyFunc {
     }
 
     return _hint;
+  }
+
+  makeSingleKeyfunc ({type, subhint, repeat, unordered}) {
+    let kfnc;
+
+    switch (type) {
+    case 'literal':
+      kfnc = arg => sig(arg);
+      break;
+
+    case 'object':
+      kfnc = objectFunc();
+      break;
+
+    case 'array':
+      kfnc = arrayFunc(keyfunc(subhint));
+      break;
+
+    case 'property':
+      kfnc = propertyFunc(subhint);
+      break;
+
+    default:
+      throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
+    }
+
+    return (...args) => {
+      // By default, single key functions must take 1 argument
+      if (args.length === 0 || args.length !== 1 && !repeat) {
+        throw new Error(`Inconsistent number of arguments, can't generate key`);
+      }
+
+      const keys = args.map(arg => kfnc(arg));
+
+      if (keys.length === 1) {
+        return keys[0];
+      }
+
+      return unordered ? sig(keys.sort().join('')) :
+        sig(keys.join(''));
+    };
   }
 }
 
