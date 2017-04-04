@@ -23,7 +23,7 @@ export const formatOptionNTimes = ({ntimes}) => {
 export const splitHint = _hint => {
   let [hint, ...hints] = _hint.split(':');
   return {
-    hint, hintSuffix: hints.join(':'),
+    type: hint, typesuffix: hints.join(':'),
   };
 };
 
@@ -37,18 +37,21 @@ export const formatHint = hint => {
 
   case 'string':
     _hint = splitHint(hint);
-    _hint = _hint.hintSuffix ? {
-      type: _hint.hint,
-      typesuffix: _hint.hintSuffix,
-    } : {type: _hint.hint};
+    if (_hint.typesuffix === '') {
+      delete _hint.typesuffix;
+    }
     break;
 
   case 'object':
     if (hint.type) {
-      _hint = hint;
+      _hint = splitHint(hint.type);
+      _hint = Object.assign({}, hint, _hint);
+      if (_hint.typesuffix === '') {
+        delete _hint.typesuffix;
+      }
       break;
     }
-  // FALL THROUGH !
+  // else FALL THROUGH !
 
   default:
     throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);

@@ -97,7 +97,10 @@ export class KeyFunc {
     }
   }
 
-  makeSingleKeyfunc ({type, typesuffix, repeat, unordered, ntimes, unique}) {
+  makeSingleKeyfunc ({
+    type, property, typesuffix,
+    repeat, unordered, ntimes, unique,
+  }) {
     let kfnc;
 
     switch (type) {
@@ -114,7 +117,17 @@ export class KeyFunc {
       break;
 
     case 'property':
-      kfnc = propertyFunc(typesuffix);
+      if (property) {
+        // Option form: {type: 'property[:typesuffix]', property: 'propname'}
+        kfnc = typesuffix ? propertyFunc(property, keyfunc(typesuffix)) :
+          propertyFunc(property);
+      } else {
+        // Shortcut form: 'property:propname', assuming default type 'literal'
+        kfnc = keyfunc({
+          type: 'property',
+          property: typesuffix,
+        });
+      }
       break;
 
     case 'ignore':
@@ -126,7 +139,7 @@ export class KeyFunc {
     }
 
     return (...args) => {
-      if (!kfnc) {
+      if (!kfnc) { // Ok, type 'ignore'
         return;
       }
 

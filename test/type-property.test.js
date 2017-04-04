@@ -34,4 +34,63 @@ describe(`Testing 'property' hint`, function () {
     expect(() => key({id: 1}, {id: 2})).to.throw(
       `Inconsistent number of arguments, can't generate key`);
   });
+
+  it(`Hint as option with type 'property:object'`, function () {
+    const key = keyfunc({
+      type: 'property:object',
+      property: 'data',
+    });
+
+    const o = {id: 1};
+    const o2 = {id: 1};
+    const obj = {data: o};
+    const obj2 = {data: o2};
+
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).not.to.equal(key(obj2));
+
+    expect(key(obj)).to.equal('o1');
+    expect(key(obj2)).to.equal('o2');
+  });
+
+  it(`Hint as option with type 'property:property:id'`, function () {
+    const key = keyfunc({
+      type: 'property:property:id',
+      property: 'data',
+    });
+
+    const o = {id: 1};
+    const o2 = {id: 1};
+    const obj = {data: o};
+    const obj2 = {data: o2};
+
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).to.equal(key(obj2));
+    expect(key(obj)).not.to.equal(key({data: {id: 2}}));
+
+    expect(key(obj)).to.equal(sig(1));
+  });
+
+  it(`Hint as option with type 'property:array`, function () {
+    const key = keyfunc({
+      type: 'property:array',
+      property: 'data',
+    });
+
+    const o = {id: 1};
+    const o2 = {id: 1};
+    const obj = {data: [o]};
+    const obj2 = {data: [o, o2]};
+
+    expect(key(obj)).to.equal(key(obj));
+    expect(key(obj)).not.to.equal(key(obj2));
+    expect(key(obj)).to.equal(key({data: [o]}));
+
+    expect(key(obj2)).to.equal(key({data: [o, o2]}));
+    expect(key(obj2)).not.to.equal(key({data: [o2, o]}));
+
+    expect(key(obj)).to.equal(sig(['o1']));
+    expect(key(obj2)).to.equal(sig(['o1', 'o2']));
+    expect(key({data: [o2, o]})).to.equal(sig(['o2', 'o1']));
+  });
 });
