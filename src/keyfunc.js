@@ -1,11 +1,47 @@
 import sig from 'sig';
-import objectFunc from './object-func';
-import arrayFunc from './array-func';
-import propertyFunc from './property-func';
+import singleFunc from './keyfunc-single';
 import {formatHint} from './format-hint';
-import removeDuplicates from './remove-duplicates';
 
 export class KeyFunc {
+  constructor (...hints) {
+    if (hints.length > 1) {
+      this._delegateToChildren(hints);
+      return;
+    }
+
+    // Format hint
+    const [hint] = hints;
+    Object.defineProperty(this, 'hint', {
+      value: formatHint(hint),
+    });
+
+    if (!this.hint.ntimes || this.hint.unordered) {
+      // Set default length and trailingIgnores
+      Object.defineProperties(this, {
+        length: {
+          value: 1,
+        },
+        trailingIgnores: {
+          value: this.hint.type === 'ignore' ? 1 : 0,
+        },
+      });
+
+      // Make key function
+      Object.defineProperty(this, 'keyfunc', {
+        value: singleFunc(this.hint, keyfunc),
+      });
+    } else {
+      // Expand ntimes and delegate to children
+      const hint = Object.assign({}, this.hint);
+      delete hint.ntimes; // Protect against Max call stack size error
+
+      const _hints = new Array(this.hint.ntimes);
+      _hints.fill(hint);
+
+      this._delegateToChildren(_hints);
+    }
+  }
+
   _delegateToChildren (hints) {
     // Delegate to sub instances if more than one hint
     Object.defineProperty(this, 'keyFuncs', {
@@ -55,113 +91,6 @@ export class KeyFunc {
         n += keyFunc.length;
         return keyFunc.keyfunc(...slice);
       }).join(''));
-    };
-  }
-
-  constructor (...hints) {
-    if (hints.length > 1) {
-      this._delegateToChildren(hints);
-      return;
-    }
-
-    // Format hint
-    const [hint] = hints;
-    Object.defineProperty(this, 'hint', {
-      value: formatHint(hint),
-    });
-
-    if (!this.hint.ntimes || this.hint.unordered) {
-      // Set default length and trailingIgnores
-      Object.defineProperties(this, {
-        length: {
-          value: 1,
-        },
-        trailingIgnores: {
-          value: this.hint.type === 'ignore' ? 1 : 0,
-        },
-      });
-
-      // Make key function
-      Object.defineProperty(this, 'keyfunc', {
-        value: this.makeSingleKeyfunc(this.hint),
-      });
-    } else {
-      // Expand ntimes and delegate to children
-      const hint = Object.assign({}, this.hint);
-      delete hint.ntimes; // Protect against Max call stack size error
-
-      const _hints = new Array(this.hint.ntimes);
-      _hints.fill(hint);
-
-      this._delegateToChildren(_hints);
-    }
-  }
-
-  makeSingleKeyfunc ({
-    type, property, typesuffix,
-    repeat, unordered, ntimes, unique,
-  }) {
-    let kfnc;
-
-    switch (type) {
-    case 'literal':
-      kfnc = sig;
-      break;
-
-    case 'object':
-      kfnc = objectFunc();
-      break;
-
-    case 'array':
-      kfnc = arrayFunc(keyfunc(typesuffix));
-      break;
-
-    case 'property':
-      if (property) {
-        // Option form: {type: 'property[:typesuffix]', property: 'propname'}
-        kfnc = typesuffix ? propertyFunc(property, keyfunc(typesuffix)) :
-          propertyFunc(property);
-      } else {
-        // Shortcut form: 'property:propname', assuming default type 'literal'
-        kfnc = keyfunc({
-          type: 'property',
-          property: typesuffix,
-        });
-      }
-      break;
-
-    case 'ignore':
-    // Rely on kfnc remains undefined
-      break;
-
-    default:
-      throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
-    }
-
-    return (...args) => {
-      if (!kfnc) { // Ok, type 'ignore'
-        return;
-      }
-
-      // By default, single key functions must take 1 argument
-      // but they can be used repeatedly, thus the filtering below
-      if (args.length === 0 || !repeat && args.length !== ntimes &&
-        args.length !== 1) { // ntimes can be undefined, so check on 1 too
-        throw new Error(`Inconsistent number of arguments, can't generate key`);
-      }
-
-      let keys = args.map(arg => kfnc(arg));
-
-      if (unique) {
-        keys = removeDuplicates(...keys);
-      }
-
-      if (keys.length === 1) {
-        return keys[0];
-      }
-
-      return unordered ? sig(keys.sort().join('')) :
-        sig(keys.join(''));
     };
   }
 }
