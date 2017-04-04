@@ -43,9 +43,14 @@ export default function singleFunc ({
 
   case 'property':
     if (property) {
-      // Option form: {type: 'property[:typesuffix]', property: 'propname'}
-      kfnc = typesuffix ? propertyFunc(property, keyfunc(typesuffix)) :
-        propertyFunc(property);
+      if (sub) {
+        const hint = formatOptionSub(sub, typesuffix, false);
+        kfnc = propertyFunc(property, keyfunc(hint.elementHints));
+      } else {
+        // Option form: {type: 'property[:typesuffix]', property: 'propname'}
+        kfnc = typesuffix ? propertyFunc(property, keyfunc(typesuffix)) :
+          propertyFunc(property);
+      }
     } else {
       // Shortcut form: 'property:propname', assuming default type 'literal'
       kfnc = keyfunc({

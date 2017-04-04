@@ -22,7 +22,7 @@ export const formatOptionNTimes = ({ntimes}) => {
   return _ntimes;
 };
 
-export const formatOptionSub = (sub, typesuffix) => {
+export const formatOptionSub = (sub, typesuffix, wrap = true) => {
   if (Array.isArray(sub)) {
     return {
       elementHints: sub,
@@ -56,7 +56,9 @@ export const formatOptionSub = (sub, typesuffix) => {
     delete elementHints.unordered;
     delete elementHints.unique;
 
-    elementHints = [elementHints];
+    if (wrap) {
+      elementHints = [elementHints];
+    }
 
     return {elementHints, arrayHint};
   }
