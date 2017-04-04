@@ -22,4 +22,11 @@ describe(`Testing 'literal' hint`, function () {
     expect(key(1)).to.equal(sig(1));
     expect(key('title')).to.equal(sig('title'));
   });
+
+  it(`Multi args is invalid`, function () {
+    const key = keyfunc('literal');
+
+    expect(() => key(console, console)).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+  });
 });

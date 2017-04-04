@@ -27,4 +27,11 @@ describe(`Testing 'property' hint`, function () {
     expect(() => key({id: {name: 'John Doe'}})).to.throw(
       `Can't generate key for object with no property 'first'`);
   });
+
+  it(`Multi args is invalid`, function () {
+    const key = keyfunc('property:id');
+
+    expect(() => key({id: 1}, {id: 2})).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+  });
 });

@@ -61,4 +61,11 @@ but argument was: "title"`);
     expect(key([1])).to.equal('o4');
     expect(key([1])).to.equal('o5');
   });
+
+  it(`Multi args is invalid`, function () {
+    const key = keyfunc('object');
+
+    expect(() => key(console, console)).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+  });
 });

@@ -62,4 +62,11 @@ describe(`Testing 'array' hint`, function () {
 
     expect(key([console, obj])).to.equal(sig([sig(console), sig(obj)]));
   });
+
+  it(`Multi args is invalid`, function () {
+    const key = keyfunc('array');
+
+    expect(() => key([console, console], [console, console])).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+  });
 });

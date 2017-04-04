@@ -126,22 +126,36 @@ export class KeyFunc {
   }
 
   makeSingleKeyfunc ({type, subhint}) {
+    let kfnc;
+
     switch (type) {
     case 'literal':
-      return arg => sig(arg);
+      kfnc = arg => sig(arg);
+      break;
 
     case 'object':
-      return objectFunc();
+      kfnc = objectFunc();
+      break;
 
     case 'array':
-      return arrayFunc(keyfunc(subhint));
+      kfnc = arrayFunc(keyfunc(subhint));
+      break;
 
     case 'property':
-      return propertyFunc(subhint);
+      kfnc = propertyFunc(subhint);
+      break;
 
     default:
       throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
     }
+
+    return (...args) => {
+      // Single key functions must take 1 argument for consistency
+      if (args.length !== 1) {
+        throw new Error(`Inconsistent number of arguments, can't generate key`);
+      }
+      return kfnc(...args);
+    };
   }
 }
 
