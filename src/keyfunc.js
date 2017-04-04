@@ -142,7 +142,7 @@ export class KeyFunc {
 
     switch (type) {
     case 'literal':
-      kfnc = arg => sig(arg);
+      kfnc = sig;
       break;
 
     case 'object':

@@ -2,7 +2,7 @@ import isString from 'is-string';
 import sig from 'sig';
 
 export default function propertyFunc (property,
-  propertyKeyfunc = arg => sig(arg)) {
+  propertyKeyfunc = sig) {
   if (!isString(property)) {
     throw new TypeError(`propertyFunc requires a string as first argument,
 but it was: ${JSON.stringify(property)}`);
