@@ -10,7 +10,7 @@ describe(`Testing 'array' hint`, function () {
     expect(key([console, console])).to.equal(key([console, console]));
 
     expect(() => key(console)).to.throw(TypeError,
-      'array.map is not a function');
+      'Function can only generate keys for arrays');
 
     expect(key([console, console])).not.to.equal(key([console]));
     expect(key([console])).not.to.equal(key([console, console]));
@@ -30,7 +30,7 @@ describe(`Testing 'array' hint`, function () {
     expect(key([console, console])).to.equal(key([console, console]));
 
     expect(() => key(console)).to.throw(TypeError,
-      'array.map is not a function');
+      'Function can only generate keys for arrays');
 
     expect(key([console, console])).not.to.equal(key([console]));
     expect(key([console])).not.to.equal(key([console, console]));
@@ -50,7 +50,7 @@ describe(`Testing 'array' hint`, function () {
     expect(key([console, console])).to.equal(key([console, console]));
 
     expect(() => key(console)).to.throw(TypeError,
-      'array.map is not a function');
+      'Function can only generate keys for arrays');
 
     expect(key([console, console])).not.to.equal(key([console]));
     expect(key([console])).not.to.equal(key([console, console]));
