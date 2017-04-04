@@ -1,7 +1,6 @@
 import sig from 'sig';
 import objectFunc from './keyfunc-object';
 import arrayFunc from './keyfunc-array';
-import setFunc from './keyfunc-set';
 import propertyFunc from './keyfunc-property';
 import removeDuplicates from './remove-duplicates';
 
@@ -25,7 +24,7 @@ export default function singleFunc ({
     break;
 
   case 'set':
-    kfnc = setFunc(keyfunc(typesuffix));
+    kfnc = arrayFunc(keyfunc(typesuffix), {unordered: true, unique: true});
     break;
 
   case 'property':
