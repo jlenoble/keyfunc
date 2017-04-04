@@ -1,5 +1,5 @@
-import sig from 'sig';
 import singleFunc from './keyfunc-single';
+import combineFunc from './keyfunc-combine';
 import {formatHint} from './format-hint';
 
 export class KeyFunc {
@@ -73,25 +73,8 @@ export class KeyFunc {
 
     // Make key function
     Object.defineProperty(this, 'keyfunc', {
-      value: this._makeCombinedKeyfunc(this.keyFuncs),
+      value: combineFunc(this),
     });
-  }
-
-  _makeCombinedKeyfunc (keyFuncs) {
-    return (...args) => {
-      if (this.length !== args.length &&
-        (this.length - this.trailingIgnores > args.length ||
-        this.length < args.length)) {
-        throw new Error(`Inconsistent number of arguments, can't generate key`);
-      }
-
-      let n = 0;
-      return sig(keyFuncs.map(keyFunc => {
-        const slice = args.slice(n, n + keyFunc.length);
-        n += keyFunc.length;
-        return keyFunc.keyfunc(...slice);
-      }).join(''));
-    };
   }
 }
 
