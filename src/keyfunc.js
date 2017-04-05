@@ -47,6 +47,21 @@ export class KeyFunc {
       value: this.keyFuncs.map(keyFunc => keyFunc.hint),
     });
 
+    const last = this.hints.length - 1;
+    let nth;
+    if(this.hints.some((hint, i) => {
+      nth = i;
+      return hint.repeat && hint.ntimes === undefined;
+    }) && nth !== last) {
+      throw new Error('Only last hint may have option repeat w/o ntimes set');
+    }
+
+    // Deal with possible infinite args
+    Object.defineProperty(this, 'unbound', {
+      value: this.hints[last].repeat && nth === last &&
+        this.hints[last].ntimes === undefined,
+    });
+
     // Compute length and trailingIgnores
     Object.defineProperties(this, {
       length: {
