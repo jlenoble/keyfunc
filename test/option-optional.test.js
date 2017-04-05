@@ -3,6 +3,25 @@ import sig from 'sig';
 import keyfunc, {optionalKey} from '../src/keyfunc';
 
 describe(`Testing option optional`, function () {
+  it('Single arg', function () {
+    const key = keyfunc({
+      type: 'literal',
+      optional: true,
+    });
+
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+
+    expect(key(o1)).to.equal(key(o1));
+    expect(key(o1)).to.equal(sig(sig(o1)));
+
+    expect(() => key()).not.to.throw();
+    expect(key()).to.equal(optionalKey);
+
+    expect(() => key(o1, o2)).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+  });
+
   it('In list of args', function () {
     const key = keyfunc('object', {
       type: 'literal',
@@ -74,14 +93,47 @@ describe(`Testing option optional`, function () {
 
     expect(key(obj)).to.equal(sig({
       name: sig('Albert'),
-      fn: 'o1',
+      fn: sig('o1'),
     }));
     expect(key({name: 'Albert'})).to.equal(sig({
       name: sig('Albert'),
-      fn: optionalKey,
+      fn: sig(optionalKey),
     }));
 
     expect(() => key(obj, obj)).to.throw(
       Error, `Inconsistent number of arguments`);
+  });
+
+  it('Several trailing optional arguments', function () {
+    const key = keyfunc('object', {
+      type: 'object',
+      optional: true,
+    }, {
+      type: 'object',
+      optional: true,
+      ntimes: 3,
+    }, {
+      type: 'object',
+      optional: true,
+    });
+
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+    const o3 = {id: 3};
+    const o4 = {id: 4};
+    const o5 = {id: 5};
+    const o6 = {id: 6};
+    const o7 = {id: 7};
+
+    expect(() => key()).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
+    expect(() => key(o1)).not.to.throw();
+    expect(() => key(o1, o2)).not.to.throw();
+    expect(() => key(o1, o2, o3)).not.to.throw();
+    expect(() => key(o1, o2, o3, o4)).not.to.throw();
+    expect(() => key(o1, o2, o3, o4, o5)).not.to.throw();
+    expect(() => key(o1, o2, o3, o4, o5, o6)).not.to.throw();
+    expect(() => key(o1, o2, o3, o4, o5, o6, o7)).to.throw(
+      `Inconsistent number of arguments, can't generate key`);
   });
 });

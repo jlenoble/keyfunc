@@ -31,8 +31,8 @@ export default function singleFunc ({
   let kfnc;
 
   if (optional) {
-    return optionalFunc(keyfunc({type, property, typesuffix, sub,
-      repeat, unordered, ntimes, unique}));
+    return optionalFunc(keyfunc({type, property, typesuffix, sub}),
+      {ntimes, repeat, unordered, unique});
   }
 
   switch (type) {

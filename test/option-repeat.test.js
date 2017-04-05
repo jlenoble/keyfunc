@@ -122,7 +122,7 @@ describe(`Testing option repeat`, function () {
     expect(() => key(o1, o2, o3, o4, o5)).not.to.throw();
 
     expect(key(o1, o2)).to.equal(sig(sig(sig(o1) + sig(o2)) + optionalKey));
-    expect(key(o1, o2, o3)).to.equal(sig(sig(sig(o1) + sig(o2)) + 'o1'));
+    expect(key(o1, o2, o3)).to.equal(sig(sig(sig(o1) + sig(o2)) + sig('o1')));
     expect(key(o1, o2, o3, o4)).to.equal(sig(sig(sig(o1) + sig(o2)) +
       sig('o1o2')));
     expect(key(o1, o2, o3, o4, o5)).to.equal(sig(sig(sig(o1) + sig(o2)) +
@@ -156,7 +156,7 @@ describe(`Testing option repeat`, function () {
       `Inconsistent number of arguments, can't generate key`);
 
     expect(key(o1, o2)).to.equal(sig(sig(sig(o1) + sig(o2)) + optionalKey));
-    expect(key(o1, o2, o3)).to.equal(sig(sig(sig(o1) + sig(o2)) + 'o1'));
+    expect(key(o1, o2, o3)).to.equal(sig(sig(sig(o1) + sig(o2)) + sig('o1')));
     expect(key(o1, o2, o3, o4)).to.equal(sig(sig(sig(o1) + sig(o2)) +
       sig('o1o2')));
   });
