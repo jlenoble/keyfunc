@@ -23,6 +23,29 @@ describe(`Testing option optional`, function () {
     expect(key(o1)).to.equal(sig('o1' + optionalKey));
   });
 
+  it('In arrays', function () {
+    const key = keyfunc({
+      type: 'array',
+      sub: ['object', {
+        type: 'literal',
+        optional: true,
+      }, 'ignore'],
+    });
+
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+    const o3 = {id: 3};
+
+    expect(key([o1, o2, o3])).to.equal(key([o1, o2, o1]));
+    expect(key([o1, o2, o3])).to.equal(key([o1, o2]));
+    expect(key([o1, o2, o3])).not.to.equal(key([o1, o3]));
+
+    expect(() => key([o1])).not.to.throw();
+
+    expect(key([o1])).not.to.equal(key([o1, o2]));
+    expect(key([o1])).to.equal(sig([sig('o1' + optionalKey)]));
+  });
+
   it(`Testing deep identity with type option 'option'`, function () {
     const key = keyfunc({
       type: 'option',
