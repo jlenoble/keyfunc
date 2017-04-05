@@ -3,14 +3,20 @@ import objectFunc from './keyfunc-object';
 import arrayFunc from './keyfunc-array';
 import propertyFunc from './keyfunc-property';
 import optionFunc from './keyfunc-option';
+import optionalFunc from './keyfunc-optional';
 import removeDuplicates from './remove-duplicates';
 import {formatOptionSub} from './format-hint';
 
 export default function singleFunc ({
   type, property, typesuffix, sub,
-  repeat, unordered, ntimes, unique,
+  optional, repeat, unordered, ntimes, unique,
 }, keyfunc) { // Recursive generation
   let kfnc;
+
+  if (optional) {
+    return optionalFunc(keyfunc({type, property, typesuffix, sub,
+      repeat, unordered, ntimes, unique}));
+  }
 
   switch (type) {
   case 'literal':
