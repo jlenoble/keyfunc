@@ -1,15 +1,29 @@
 import {expect} from 'chai';
 import sig from 'sig';
-import keyfunc from '../src/keyfunc';
+import keyfunc, {optionalKey} from '../src/keyfunc';
 
-describe(`Testing deep identity for option 'optional'`, function () {
-  it(`Calling keyfunc({
-    type: 'option',
-    sub: {
-      name: 'literal',
-      fn: {type: 'object', optional: true}
-    }
-  })`, function () {
+describe(`Testing option optional`, function () {
+  it('In list of args', function () {
+    const key = keyfunc('object', {
+      type: 'literal',
+      optional: true,
+    }, 'ignore');
+
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+    const o3 = {id: 3};
+
+    expect(key(o1, o2, o3)).to.equal(key(o1, o2, o1));
+    expect(key(o1, o2, o3)).to.equal(key(o1, o2));
+    expect(key(o1, o2, o3)).not.to.equal(key(o1, o3));
+
+    expect(() => key(o1)).not.to.throw();
+
+    expect(key(o1)).not.to.equal(key(o1, o2));
+    expect(key(o1)).to.equal(sig('o1' + optionalKey));
+  });
+
+  it(`Testing deep identity with type option 'option'`, function () {
     const key = keyfunc({
       type: 'option',
       sub: {
@@ -41,7 +55,7 @@ describe(`Testing deep identity for option 'optional'`, function () {
     }));
     expect(key({name: 'Albert'})).to.equal(sig({
       name: sig('Albert'),
-      fn: '0', // '0' is the key for all optional arg
+      fn: optionalKey,
     }));
 
     expect(() => key(obj, obj)).to.throw(

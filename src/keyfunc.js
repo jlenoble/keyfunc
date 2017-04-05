@@ -22,7 +22,7 @@ export class KeyFunc {
           value: 1,
         },
         trailingIgnores: {
-          value: this.hint.type === 'ignore' ? 1 : 0,
+          value: this.hint.type === 'ignore' || this.hint.optional ? 1 : 0,
         },
       });
 
@@ -81,3 +81,5 @@ export class KeyFunc {
 export default function keyfunc (...hints) {
   return new KeyFunc(...hints).keyfunc;
 }
+
+export {optionalKey} from './keyfunc-optional';
