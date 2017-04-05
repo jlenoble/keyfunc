@@ -47,20 +47,8 @@ export class KeyFunc {
       value: this.keyFuncs.map(keyFunc => keyFunc.hint),
     });
 
-    const last = this.hints.length - 1;
-    let nth;
-    if(this.hints.some((hint, i) => {
-      nth = i;
-      return hint.repeat && hint.ntimes === undefined;
-    }) && nth !== last) {
-      throw new Error('Only last hint may have option repeat w/o ntimes set');
-    }
-
-    // Deal with possible infinite args
-    Object.defineProperty(this, 'unbound', {
-      value: this.hints[last].repeat && nth === last &&
-        this.hints[last].ntimes === undefined,
-    });
+    this._handleRepeat();
+    this._handleOptional();
 
     // Compute length and trailingIgnores
     Object.defineProperties(this, {
@@ -83,6 +71,57 @@ export class KeyFunc {
     // Make key function
     Object.defineProperty(this, 'keyfunc', {
       value: combineFunc(this),
+    });
+  }
+
+  _handleRepeat () {
+    const last = this.hints.length - 1;
+    let nth;
+    if(this.hints.some((hint, i) => {
+      nth = i;
+      return hint.repeat && hint.ntimes === undefined;
+    }) && nth !== last) {
+      throw new Error('Only last hint may have option repeat w/o ntimes set');
+    }
+
+    // Deal with possible infinite args
+    Object.defineProperty(this, 'unbound', {
+      value: this.hints[last].repeat && nth === last &&
+        this.hints[last].ntimes === undefined,
+    });
+  }
+
+  _handleRepeat () {
+    const last = this.hints.length - 1;
+    let nth;
+    if(this.hints.some((hint, i) => {
+      nth = i;
+      return hint.repeat && hint.ntimes === undefined;
+    }) && nth !== last) {
+      throw new Error('Only last hint may have option repeat w/o ntimes set');
+    }
+
+    // Deal with possible infinite args
+    Object.defineProperty(this, 'unbound', {
+      value: this.hints[last].repeat && nth === last &&
+        this.hints[last].ntimes === undefined,
+    });
+  }
+
+  _handleOptional () {
+    // If a hint is optional, all following hints must also be.
+    let optional = false;
+
+    this.hints.forEach((hint, i) => {
+      if (!hint.optional && hint.type !== 'ignore' && optional) {
+        throw new Error('Only trailing hints can be optional');
+      }
+      optional = optional || hint.optional;
+    });
+
+    // Deal with possible optional args
+    Object.defineProperty(this, 'optional', {
+      value: optional,
     });
   }
 }
