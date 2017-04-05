@@ -319,7 +319,7 @@ describe('Backward compatibility with v0.8.2', function () {
       expect(key(obj)).to.equal(signature('blue'));
     });
 
-    /*it(`Calling keyFunc({
+    it(`Calling keyFunc({
       type: 'property',
       property: 'home:kitchen',
       sub: 'object'
@@ -338,7 +338,7 @@ describe('Backward compatibility with v0.8.2', function () {
       expect(() => key({home: {livingRoom: {table: 'blue'}}}))
         .to.throw(ReferenceError,
         `Can't generate key for object with no property 'kitchen'`);
-      expect(key(obj)).to.equal('1');
-    });*/
+      expect(key(obj)).to.equal('o1');
+    });
   });
 });

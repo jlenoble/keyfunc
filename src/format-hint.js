@@ -36,7 +36,7 @@ export const formatOptionSub = (sub, typesuffix, wrap = true) => {
         sub} and typesuffix:${typesuffix}`);
     }
 
-    return;
+    return {type: sub};
   }
 
   if (typeof sub === 'object') {
