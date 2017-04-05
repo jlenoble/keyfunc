@@ -4,7 +4,7 @@ import removeDuplicates from './remove-duplicates';
 
 export default function arrayFunc (elementKeyfunc = objectFunc(),
 options = {}) {
-  const {unordered, unique, spread} = options;
+  const {unordered, unique, ntimes, spread} = options;
 
   // used to be array => sig(array.map(elementKeyfunc))
   // but it breaks when elementKeyfunc is defined with a rest operator
@@ -12,6 +12,10 @@ options = {}) {
   // and elementKeyFunc may treat those as arg0, arg1, arg2 in some loop
   return array => {
     try {
+      if (ntimes && array.length !== ntimes) {
+        throw new Error(`Inconsistent number of elements, can't generate key`);
+      }
+
       let arr = array;
 
       if (spread) {
