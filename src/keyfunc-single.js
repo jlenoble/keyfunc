@@ -7,6 +7,23 @@ import optionalFunc from './keyfunc-optional';
 import removeDuplicates from './remove-duplicates';
 import {formatOptionSub} from './format-hint';
 
+const checkArgsLength = (args, {repeat, ntimes}) => {
+  // By default, single key functions must take 1 argument
+  // but they can be used repeatedly, thus the filtering below
+
+  if (args.length !== 0) {
+    if (args.length === 1 || args.length === ntimes) {
+      return;
+    }
+
+    if (repeat && ntimes === undefined) {
+      return;
+    }
+  }
+
+  throw new Error(`Inconsistent number of arguments, can't generate key`);
+};
+
 export default function singleFunc ({
   type, property, typesuffix, sub,
   optional, repeat, unordered, ntimes, unique,
@@ -84,12 +101,7 @@ export default function singleFunc ({
       return;
     }
 
-    // By default, single key functions must take 1 argument
-    // but they can be used repeatedly, thus the filtering below
-    if (args.length === 0 || !repeat && args.length !== ntimes &&
-      args.length !== 1) { // ntimes can be undefined, so check on 1 too
-      throw new Error(`Inconsistent number of arguments, can't generate key`);
-    }
+    checkArgsLength(args, {repeat, ntimes});
 
     let keys = args.map(arg => kfnc(arg));
 
@@ -101,7 +113,10 @@ export default function singleFunc ({
       return keys[0];
     }
 
-    return unordered ? sig(keys.sort().join('')) :
-      sig(keys.join(''));
+    if (unordered) {
+      keys = keys.sort();
+    }
+
+    return sig(keys.join(''));
   };
 };

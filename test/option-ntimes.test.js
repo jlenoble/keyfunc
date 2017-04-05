@@ -1,3 +1,4 @@
+import sig from 'sig';
 import {expect} from 'chai';
 import keyfunc from '../src/keyfunc';
 
@@ -14,7 +15,11 @@ describe(`Testing option ntimes`, function () {
     const o5 = {id: 5};
 
     expect(key1(o1, o2, o3, o4, o5)).to.equal(key1(o1, o2, o3, o4, o5));
-    expect(key1(o1, o2, o3, o4, o5)).to.equal(key2(o1, o2, o3, o4, o5));
+    expect(key1(o1, o2, o3, o4, o5)).to.equal(sig('o1o2o3o4o5'));
+
+    // key1 uses 1 single keyFunc, key2 uses 5 different keyFuncs
+    expect(key1(o1, o2, o3, o4, o5)).not.to.equal(key2(o1, o2, o3, o4, o5));
+    expect(key2(o1, o2, o3, o4, o5)).to.equal(sig('o1o1o1o1o1'));
 
     // The number of arguments must be exactly ntimes
     expect(() => key1(o1, o2, o3, o4)).to.throw(Error,

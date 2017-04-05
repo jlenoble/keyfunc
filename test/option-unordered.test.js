@@ -1,3 +1,4 @@
+import sig from 'sig';
 import {expect} from 'chai';
 import keyfunc from '../src/keyfunc';
 
@@ -12,6 +13,7 @@ describe(`Testing option unordered`, function () {
     expect(key(o1, o2, o3)).to.equal(key(o2, o1, o3));
     expect(key(o1, o2, o3)).to.equal(key(o2, o3, o1));
     expect(key(o1, o2, o3)).to.equal(key(o3, o2, o1));
+    expect(key(o1, o2, o3)).to.equal(sig('o1o2o3'));
   });
 
   it(`Option combined with option ntimes`,
@@ -25,6 +27,7 @@ describe(`Testing option unordered`, function () {
     expect(key(o1, o2, o3)).to.equal(key(o2, o1, o3));
     expect(key(o1, o2, o3)).to.equal(key(o2, o3, o1));
     expect(key(o1, o2, o3)).to.equal(key(o3, o2, o1));
+    expect(key(o1, o2, o3)).to.equal(sig('o1o2o3'));
     expect(() => key(o1, o2, o3, o4)).to.throw(Error,
       `Inconsistent number of arguments, can't generate key`);
   });
