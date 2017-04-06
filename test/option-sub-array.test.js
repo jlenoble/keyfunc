@@ -171,13 +171,13 @@ describe('Backward compatibility with v0.8.2', function () {
         Error, `Inconsistent number of arguments`);
     });
 
-    /*it(`Calling keyFunc({type: 'array', sub: [
+    it(`Calling keyFunc({type: 'array', sub: [
           'object',
           'literal',
           {property: 'id'},Backward compatibility with v0.8.2
           'array:property:name',
           'set'
-        ], stem: 'key', rest: true})`, function () {
+        ], rest: true})`, function () {
       const key = keyFunc({
         type: 'array',
         sub: [
@@ -187,7 +187,6 @@ describe('Backward compatibility with v0.8.2', function () {
           'array:property:name',
           'set',
         ],
-        stem: 'key',
         rest: true,
       });
 
@@ -227,6 +226,6 @@ describe('Backward compatibility with v0.8.2', function () {
         [o3],
         [o1, {id: 1}, o3],
       ]));
-    });*/
+    });
   });
 });
