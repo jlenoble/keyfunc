@@ -4,15 +4,4 @@
 
 But when all arguments have the same type, strict ordering may sometimes be too restrictive. With option 'unordered' provided to the first (and only) argument of `keyFunc`, the limitation is lifted.
 
-```js
-import keyFunc from 'keyfunc';
-
-const okey = keyFunc({type: 'object', rest: true});
-const ukey = keyFunc({type: 'object', unordered: true});
-
-const o1 = {id: 1};
-const o2 = {id: 2};
-
-okey(o1, o2) !== okey(o2, o1);
-ukey(o1, o2) === ukey(o2, o1);
-```
+#include "build/docs/examples/unordered-lists.test.md"

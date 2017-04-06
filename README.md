@@ -29,15 +29,17 @@ keyFunc takes at least as many arguments as you will use the generated function 
 Those arguments should hint on the nature of the arguments you will pass to the generated function. Main keywords are 'object', 'literal', 'property', 'array', 'set' and 'ignore' used as in the following example:
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc(
   'object', // First argument must be an object matched strictly
   'literal', // Second argument can be anything matched literally
-  {property: 'color'}, // Third argument can be anything matched literally from their property 'id' downwards
+  {property: 'color'}, // Third argument and all subsequent ones can be
+  // anything matched literally from their property 'id' downwards
   'array', // Fourth argument is an array of 'object'
   'set', // Fifth argument is a set of 'object'
-  'ignore', // Sixth argument is ignored
+  'ignore' // Sixth argument is ignored
 );
 
 const obj = {id: 1};
@@ -46,13 +48,8 @@ const s1 = key(console, 'log', {color: 'red'}, [console, obj],
 const s2 = key(console, 'log', {color: 'red'}, [console, obj],
   [obj, console], 'dummy');
 
-s1 === s2; // true
+expect(s1).to.equal(s2);
 ```
-
-There is also a type 'option' which can't be used without the option 'sub' specifying the nature of its properties. See [Type 'option'](#type-option).
-
-See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ```set:*```. See [property:*](#property) for construct ```property:*```.
-
 ### Options
 
 * `stem`: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
@@ -68,34 +65,31 @@ See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ``
 * `optional`: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc(
   {
-    stem: 'first'
+    type: 'object',
   },
   {
-    stem: 'second',
     type: 'literal',
-    rest: true
   },
   {
-    stem: 'third',
-    property: 'color'
+    property: 'color',
   },
   {
-    stem: 'fourth',
-    type: 'array'
+    type: 'array',
   },
   {
-    stem: 'fifth',
-    type: 'set'
+    type: 'set',
   }
 );
 
 const obj = {id: 1};
-/first1_second[0-9a-f]{40}_third[0-9a-f]{40}_fourth[0-9a-f]{40}_fifth[0-9a-f]{40}_second[0-9a-f]{40}/.test(
-  key(console, 'log', {color: 'red'}, [console, obj], [obj, console], 'dummy')); // true
+expect(
+  /[0-9a-f]{40}/.test(key(console, 'log', {color: 'red'}, [console, obj],
+      [obj, console]))).to.be.true;
 ```
 
 
@@ -108,7 +102,8 @@ There are advantages and drawbacks pertaining to each option type. Choose with c
 Use this if you know your objects are persistent. When used on intermediary literals, your keys will be only transient. But this option allows for user-friendly (human-readable) keys.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc('object');
 
@@ -118,13 +113,13 @@ const s1 = key(option1);
 const s2 = key({color: 'green'});
 const s3 = key({color: 'blue'});
 
-s1 !== s2; // true
-s2 !== s3; // true
-s3 !== s1; // true
+expect(s1).not.to.equal(s2);
+expect(s2).not.to.equal(s3);
+expect(s3).not.to.equal(s1);
 
-s1 === key(option1); // true
-s1 !== key({color: 'red'}); // true
-s1 !== key({color: 'red', size: 'Huge'}); // true
+expect(s1).to.equal(key(option1));
+expect(s1).not.to.equal(key({color: 'red'}));
+expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
 ```
 
 ### 'literal' option
@@ -132,7 +127,8 @@ s1 !== key({color: 'red', size: 'Huge'}); // true
 Use this when literal equality is fine. This reduces the number of possible keys, at the expense of key readability.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc('literal');
 
@@ -142,13 +138,13 @@ const s1 = key(option1);
 const s2 = key({color: 'green'});
 const s3 = key({color: 'blue'});
 
-s1 !== s2; // true
-s2 !== s3; // true
-s3 !== s1; // true
+expect(s1).not.to.equal(s2);
+expect(s2).not.to.equal(s3);
+expect(s3).not.to.equal(s1);
 
-s1 === key(option1); // true
-s1 === key({color: 'red'}); // true
-s1 !== key({color: 'red', size: 'Huge'}); // true
+expect(s1).to.equal(key(option1));
+expect(s1).to.equal(key({color: 'red'}));
+expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
 ```
 
 ### 'property' option
@@ -156,7 +152,8 @@ s1 !== key({color: 'red', size: 'Huge'}); // true
 Use this when matching on a specific property. This even further reduces the number of generated keys, but now you run the risk of matching pretty unrelated things.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc({property: 'color'});
 
@@ -166,13 +163,13 @@ const s1 = key(option1);
 const s2 = key({color: 'green'});
 const s3 = key({color: 'blue'});
 
-s1 !== s2; // true
-s2 !== s3; // true
-s3 !== s1; // true
+expect(s1).not.to.equal(s2);
+expect(s2).not.to.equal(s3);
+expect(s3).not.to.equal(s1);
 
-s1 === key(option1); // true
-s1 === key({color: 'red'}); // true
-s1 === key({color: 'red', size: 'Huge'}); // true
+expect(s1).to.equal(key(option1));
+expect(s1).to.equal(key({color: 'red'}));
+expect(s1).to.equal(key({color: 'red', size: 'Huge'}));
 ```
 
 
@@ -185,7 +182,8 @@ When using arrays as arguments, you may either match them simply by using the 'l
 Use this when matching arrays where order matters and matching literal objects should be considered different.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc('array');
 
@@ -197,8 +195,8 @@ const s1 = key([option1, option2, option3]);
 const s2 = key([option3, option2, option1]);
 const s3 = key([option1, option2, option3]);
 
-s1 !== s2; // true
-s1 === s3; // true
+expect(s1).not.to.equal(s2);
+expect(s1).to.equal(s3);
 ```
 
 ### 'set' option
@@ -206,7 +204,8 @@ s1 === s3; // true
 Use this when matching arrays where order doesn't matter and matching literal objects shoud be considered different.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc('set');
 
@@ -218,8 +217,8 @@ const s1 = key([option1, option2, option3]);
 const s2 = key([option3, option2, option1]);
 const s3 = key([option1, option2, option3]);
 
-s1 === s2; // true
-s1 === s3; // true
+expect(s1).to.equal(s2);
+expect(s1).to.equal(s3);
 ```
 
 
@@ -261,14 +260,15 @@ With [`array:* and set:*`](#array-and-set), you get collections built from a sin
 Therefore you need deep indexing with option `'sub'`. Syntax resembles that of `keyFunc` but arguments are wrapped in an array.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const poorKey = keyFunc({type: 'literal', rest: true});
 
 const sharpKey = keyFunc({
   type: 'array', // Mandatory
   sub: ['object', 'literal'],
-  rest: true // Expects a list of mixed arrays, not only a single one
+  rest: true, // Expects a list of mixed arrays, not only a single one
 });
 
 const o1 = {name: 1};
@@ -280,11 +280,15 @@ const sharp = sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
 
 o1.name = 4;
 
-poor !== poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-poor === poorKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
+expect(poor).not.to.equal(poorKey(
+  [o1, 'name'], [o2, 'name'], [o3, 'name']));
+expect(poor).to.equal(poorKey(
+  [{name: 1}, 'name'], [o2, 'name'], [o3, 'name']));
 
-sharp === sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
+expect(sharp).to.equal(sharpKey(
+  [o1, 'name'], [o2, 'name'], [o3, 'name']));
+expect(sharp).not.to.equal(sharpKey(
+  [{name: 1}, 'name'], [o2, 'name'], [o3, 'name']));
 ```
 
 ### Mixed properties
@@ -294,14 +298,15 @@ With [`property:*`](#property), just like for [`array:* and set:*`](#array-and-s
 Just like for 'array', you can use the option 'sub' for that.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const poorKey = keyFunc({property: 'data', rest: true});
 
 const sharpKey = keyFunc({
   property: 'data', // Mandatory
   sub: {type: 'array', sub: ['object', 'literal']},
-  rest: true // Expects a list of mixed arrays, not only a single one
+  rest: true, // Expects a list of mixed arrays, not only a single one
 });
 
 const o1 = {name: 1};
@@ -315,23 +320,24 @@ const sharp = sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
 
 o1.name = 4;
 
-poor !== poorKey({data: [o1, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
-poor === poorKey({data: [{name: 1}, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
+expect(poor).not.to.equal(poorKey({data: [o1, 'name']},
+  {data: [o2, 'name']}, {data: [o3, 'name']}));
+expect(poor).to.equal(poorKey({data: [{name: 1}, 'name']},
+  {data: [o2, 'name']}, {data: [o3, 'name']}));
 
-sharp === sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
-sharp !== sharpKey({data: [{name: 1}, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
-```  
+expect(sharp).to.equal(sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
+  {data: [o3, 'name']}));
+expect(sharp).not.to.equal(sharpKey({data: [{name: 1}, 'name']},
+  {data: [o2, 'name']}, {data: [o3, 'name']}));
+```
 
 ### Deep properties
 
 Using the syntax of [Mixed properties](#mixed-properties), it's cumbersome to write hints to get to a deep property. But you can refine your declaration of 'property' to create the same key function. See the following example:
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const cumbersomeKey = keyFunc({
   property: 'humanity',
@@ -340,20 +346,24 @@ const cumbersomeKey = keyFunc({
     sub: {
       property: 'brain',
       sub: {
-        property: 'thought'
-      }
-    }
-  }
+        property: 'thought',
+      },
+    },
+  },
 });
 const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
 
 const o = {humanity: {man: {brain: {thought: 'Duh?'}}}};
 
-cumbersomeKey(o) === cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
-cumbersomeKey(o) !== cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}});
-straightKey(o) === straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}});
-straightKey(o) !== straightKey({humanity: {man: {brain: {thought: 'Da!'}}}});
-cumbersomeKey(o) === straightKey(o));
+expect(cumbersomeKey(o)).to.equal(straightKey(o));
+expect(cumbersomeKey(o)).to.equal(
+  cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
+expect(cumbersomeKey(o)).not.to.equal(
+  cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
+expect(straightKey(o)).to.equal(
+  straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
+expect(straightKey(o)).not.to.equal(
+  straightKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
 ```
 
 ### Type 'option'
@@ -361,14 +371,15 @@ cumbersomeKey(o) === straightKey(o));
 Using the 'property' type may not be enough if one is interested in more than one property to generate a key. Often the 'literal' type will be enough, but again, one may want to ignore some properties, or check a property strictly. The 'option' type solves that by using the option 'sub' to specify what to expect for each relevant properties. The other ones will be ignored.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const key = keyFunc({
   type: 'option',
   sub: {
     id: 'literal',
-    name: 'literal'
-  }
+    name: 'literal',
+  },
 });
 
 const option1 = {id: 1, name: 'a', color: 'red'};
@@ -379,8 +390,8 @@ const s1 = key(option1);
 const s2 = key(option2);
 const s3 = key(option3);
 
-s1 !== s2; // true
-s1 === s3; // true
+expect(s1).not.to.equal(s2);
+expect(s1).to.equal(s3);
 ```
 
 ### Unordered lists
@@ -390,7 +401,8 @@ s1 === s3; // true
 But when all arguments have the same type, strict ordering may sometimes be too restrictive. With option 'unordered' provided to the first (and only) argument of `keyFunc`, the limitation is lifted.
 
 ```js
-import keyFunc from 'keyfunc';
+import {expect} from 'chai';
+import keyFunc from '../../src/keyfunc';
 
 const okey = keyFunc({type: 'object', rest: true});
 const ukey = keyFunc({type: 'object', unordered: true});

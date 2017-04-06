@@ -22,15 +22,4 @@ describe('Testing README.md examples', function () {
     expect(s1).not.to.equal(s2);
     expect(s1).to.equal(s3);
   });
-
-  it(`Unordered lists`, function () {
-    const okey = keyFunc({type: 'object', rest: true});
-    const ukey = keyFunc({type: 'object', unordered: true});
-
-    const o1 = {id: 1};
-    const o2 = {id: 2};
-
-    expect(okey(o1, o2)).not.to.equal(okey(o2, o1));
-    expect(ukey(o1, o2)).to.equal(ukey(o2, o1));
-  });
 });

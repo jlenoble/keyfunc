@@ -12,33 +12,4 @@
 
 * `optional`: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
 
-```js
-import keyFunc from 'keyfunc';
-
-const key = keyFunc(
-  {
-    stem: 'first'
-  },
-  {
-    stem: 'second',
-    type: 'literal',
-    rest: true
-  },
-  {
-    stem: 'third',
-    property: 'color'
-  },
-  {
-    stem: 'fourth',
-    type: 'array'
-  },
-  {
-    stem: 'fifth',
-    type: 'set'
-  }
-);
-
-const obj = {id: 1};
-/first1_second[0-9a-f]{40}_third[0-9a-f]{40}_fourth[0-9a-f]{40}_fifth[0-9a-f]{40}_second[0-9a-f]{40}/.test(
-  key(console, 'log', {color: 'red'}, [console, obj], [obj, console], 'dummy')); // true
-```
+#include "build/docs/examples/options.test.md"

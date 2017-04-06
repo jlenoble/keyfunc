@@ -26,7 +26,7 @@ export const docGlob = 'markdown.json';
 export const srcGlob = join(srcDir, ['**/*.js', '**/*.jsx']);
 export const testGlob = join(testDir, ['**/*.test.js', '**/*.test.jsx']);
 export const allTestGlob = join(testDir, ['**/*.js', '**/*.jsx']);
-export const docExamplesTestGlob = ['docs/examples/**.*.js'];
+export const docExamplesTestGlob = ['docs/examples/**/*.test.js'];
 
 export const srcBuildGlob = join(buildDir, srcGlob);
 export const testBuildGlob = join(buildDir, testGlob).concat(join(

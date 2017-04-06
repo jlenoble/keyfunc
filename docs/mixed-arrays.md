@@ -4,29 +4,4 @@ With [`array:* and set:*`](#array-and-set), you get collections built from a sin
 
 Therefore you need deep indexing with option `'sub'`. Syntax resembles that of `keyFunc` but arguments are wrapped in an array.
 
-```js
-import keyFunc from 'keyfunc';
-
-const poorKey = keyFunc({type: 'literal', rest: true});
-
-const sharpKey = keyFunc({
-  type: 'array', // Mandatory
-  sub: ['object', 'literal'],
-  rest: true // Expects a list of mixed arrays, not only a single one
-});
-
-const o1 = {name: 1};
-const o2 = {name: 2};
-const o3 = {name: 3};
-
-const poor = poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-const sharp = sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-
-o1.name = 4;
-
-poor !== poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-poor === poorKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
-
-sharp === sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
-```
+#include "build/docs/examples/mixed-arrays.test.md"
