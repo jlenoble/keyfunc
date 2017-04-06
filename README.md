@@ -1,4 +1,25 @@
 # keyfunc
+
+  * [Usage](#usage)
+    * [Options](#options)
+  * ['object' vs 'literal' vs 'property'](#object-vs-literal-vs-property)
+    * ['object' option](#object-option)
+    * ['literal' option](#literal-option)
+    * ['property' option](#property-option)
+  * ['array' vs 'set'](#array-vs-set)
+    * ['array' option](#array-option)
+    * ['set' option](#set-option)
+  * [Advanced Usage](#advanced-usage)
+    * [`array:*` and `set:*`](#array-and-set)
+    * [`property:*`](#property)
+    * [Mixed arrays](#mixed-arrays)
+    * [Mixed properties](#mixed-properties)
+    * [Deep properties](#deep-properties)
+    * [Type 'option'](#type-option)
+    * [Unordered lists](#unordered-lists)
+  * [License](#license)
+
+
 Creates custom functions returning custom keys for any set of args
 
 ## Usage
@@ -34,17 +55,17 @@ See also [array:* and set:*](#array-and-set) for constructs ```array:*``` and ``
 
 ### Options
 
-* ```stem```: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
+* `stem`: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
 
-* ```type```: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed simultaneously.
+* `type`: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed simultaneously.
 
-* ```rest```: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
+* `rest`: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
 
-* ```unordered```: By default, the arguments passed to the generated key function are strictly ordered. If set to true, then 'unordered' option enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists) for an example.
+* `unordered`: By default, the arguments passed to the generated key function are strictly ordered. If set to true, then 'unordered' option enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists) for an example.
 
-* ```sub```: Construct ```'array:*'``` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The ```sub``` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to ```keyFunc```. See also See [Mixed properties](#mixed-properties).
+* `sub`: Construct `'array:*'` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The `sub` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to `keyFunc`. See also See [Mixed properties](#mixed-properties).
 
-* ```optional```: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
+* `optional`: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
 
 ```js
 import keyFunc from 'keyfunc';
@@ -76,6 +97,7 @@ const obj = {id: 1};
 /first1_second[0-9a-f]{40}_third[0-9a-f]{40}_fourth[0-9a-f]{40}_fifth[0-9a-f]{40}_second[0-9a-f]{40}/.test(
   key(console, 'log', {color: 'red'}, [console, obj], [obj, console], 'dummy')); // true
 ```
+
 
 ## 'object' vs 'literal' vs 'property'
 
@@ -153,6 +175,7 @@ s1 === key({color: 'red'}); // true
 s1 === key({color: 'red', size: 'Huge'}); // true
 ```
 
+
 ## 'array' vs 'set'
 
 When using arrays as arguments, you may either match them simply by using the 'literal' option, or using the 'array' or 'set' options. In the latter case, each element in the list is matched using the 'object' option.
@@ -199,42 +222,43 @@ s1 === s2; // true
 s1 === s3; // true
 ```
 
+
 ## Advanced Usage
 
-### ```array:*``` and ```set:*```
+### `array:*` and `set:*`
 
-By default, options ```'array'``` and ```'set'``` define arrays and sets of objects compared with strict equality (```===```). When the comparison can (or should) be relaxed or precised, those options can be extended as such:
+By default, options `'array'` and `'set'` define arrays and sets of objects compared with strict equality (`===`). When the comparison can (or should) be relaxed or precised, those options can be extended as such:
 
-* ```'array:literal'```: Expects an array of literals (strictly ordered).
-* ```'array:property:[propertyName]'```: Expects an array of objects with property 'propertyName' (strictly ordered).
-* ```'array:array'```: Expects an array (strictly ordered) of arrays (strictly ordered) of objects (strictly compared).
-* ```'array:set'```: Expects an array (strictly ordered) of arrays (unordered) of objects (strictly compared).
-* ```'set:literal'```: Expects an array of literals (unordered).
-* ```'set:property:[propertyName]'```: Expects an array of objects with property 'propertyName' (unordered).
-* ```'set:array'```: Expects an array (unordered) of arrays (strictly ordered) of objects (strictly compared).
-* ```'set:set'```: Expects an array (unordered) of arrays (unordered) of objects (strictly compared).
+* `'array:literal'`: Expects an array of literals (strictly ordered).
+* `'array:property:[propertyName]'`: Expects an array of objects with property 'propertyName' (strictly ordered).
+* `'array:array'`: Expects an array (strictly ordered) of arrays (strictly ordered) of objects (strictly compared).
+* `'array:set'`: Expects an array (strictly ordered) of arrays (unordered) of objects (strictly compared).
+* `'set:literal'`: Expects an array of literals (unordered).
+* `'set:property:[propertyName]'`: Expects an array of objects with property 'propertyName' (unordered).
+* `'set:array'`: Expects an array (unordered) of arrays (strictly ordered) of objects (strictly compared).
+* `'set:set'`: Expects an array (unordered) of arrays (unordered) of objects (strictly compared).
 
 For other element types, you will need to use option 'sub' instead. See [Mixed arrays](#mixed-arrays).
 
-### ```property:*```
+### `property:*`
 
-By default, option ```'property'``` indicates that objects will be compared with regard to a particular property, specified as an option: ```keyFunc({property: 'id'})``` for example.
+By default, option `'property'` indicates that objects will be compared with regard to a particular property, specified as an option: `keyFunc({property: 'id'})` for example.
 
 The comparison in such cases will be done literally. But if you want another type of comparison, you may use the following:
 
-* ```'property:object'```: Expects property to be an object, strictly compared.
-* ```'property:array'```: Expects property to be an array (strictly ordered) of objects (strictly compared).
-* ```'property:set'```: Expects property to be an array (unordered) of objects (strictly compared).
+* `'property:object'`: Expects property to be an object, strictly compared.
+* `'property:array'`: Expects property to be an array (strictly ordered) of objects (strictly compared).
+* `'property:set'`: Expects property to be an array (unordered) of objects (strictly compared).
 
 For other property types, you will need to use option 'sub' instead. See [Mixed properties](#mixed-properties).
 
-For deep properties, you have the construct ```{property: 'a:b:c:...'}```. See [Deep properties](#deep-properties).
+For deep properties, you have the construct `{property: 'a:b:c:...'}`. See [Deep properties](#deep-properties).
 
 ### Mixed arrays
 
-With [```array:* and set:*```](#array-and-set), you get collections built from a single type, that is ```['object', 'object', ...]``` or ```['array', 'array', ...]``` for example. Using straight ```keyFunc```, you can get keys from mixed types to index an object, but you do so one at a time. For example, ```(console, 'log')``` and ```(console, 'error')``` can map two singletons using ```keyFunc('object', 'literal')``` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with ```((console, 'log'), (console, 'error'))``` except by using ```keyFunc({type: 'literal', rest: true})```. But the latter option results in random side-effects once objects start getting mutated.
+With [`array:* and set:*`](#array-and-set), you get collections built from a single type, that is `['object', 'object', ...]` or `['array', 'array', ...]` for example. Using straight `keyFunc`, you can get keys from mixed types to index an object, but you do so one at a time. For example, `(console, 'log')` and `(console, 'error')` can map two singletons using `keyFunc('object', 'literal')` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with `((console, 'log'), (console, 'error'))` except by using `keyFunc({type: 'literal', rest: true})`. But the latter option results in random side-effects once objects start getting mutated.
 
-Therefore you need deep indexing with option ```'sub'```. Syntax resembles that of ```keyFunc``` but arguments are wrapped in an array.
+Therefore you need deep indexing with option `'sub'`. Syntax resembles that of `keyFunc` but arguments are wrapped in an array.
 
 ```js
 import keyFunc from 'keyfunc';
@@ -265,7 +289,7 @@ sharp !== sharpKey([{name: 1}, 'name'], [o2, 'name'], [o3, 'name']);
 
 ### Mixed properties
 
-With [```property:*```](#property), just like for [```array:* and set:*```](#array-and-set), your properties point to base types like 'object' or 'array'. That is an improvement compared to default 'literal', but you will often want more flexibility and generate keys for arbitrary types.
+With [`property:*`](#property), just like for [`array:* and set:*`](#array-and-set), your properties point to base types like 'object' or 'array'. That is an improvement compared to default 'literal', but you will often want more flexibility and generate keys for arbitrary types.
 
 Just like for 'array', you can use the option 'sub' for that.
 
@@ -361,9 +385,9 @@ s1 === s3; // true
 
 ### Unordered lists
 
-```keyFunc``` generates key functions that, when they accept more than one argument, enforce strict ordering of those arguments. This is due to the fact that by default, arguments don't share their type, and therefore don't share the function that generates their keys.
+`keyFunc` generates key functions that, when they accept more than one argument, enforce strict ordering of those arguments. This is due to the fact that by default, arguments don't share their type, and therefore don't share the function that generates their keys.
 
-But when all arguments have the same type, strict ordering may sometimes be too restrictive. With option 'unordered' provided to the first (and only) argument of ```keyFunc```, the limitation is lifted.
+But when all arguments have the same type, strict ordering may sometimes be too restrictive. With option 'unordered' provided to the first (and only) argument of `keyFunc`, the limitation is lifted.
 
 ```js
 import keyFunc from 'keyfunc';
@@ -377,6 +401,8 @@ const o2 = {id: 2};
 okey(o1, o2) !== okey(o2, o1);
 ukey(o1, o2) === ukey(o2, o1);
 ```
+
+
 
 ## License
 

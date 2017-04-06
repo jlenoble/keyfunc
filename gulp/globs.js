@@ -21,6 +21,7 @@ export const distDir = 'lib';
 export const apps = ['keyfunc'];
 export const bundleGlob = 'bundle.js';
 export const testBundleGlob = 'test_bundle.js';
+export const docGlob = 'markdown.json';
 
 export const srcGlob = join(srcDir, ['**/*.js', '**/*.jsx']);
 export const testGlob = join(testDir, ['**/*.test.js', '**/*.test.jsx']);
