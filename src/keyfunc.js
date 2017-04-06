@@ -3,14 +3,16 @@ import combineFunc from './keyfunc-combine';
 import {formatHint} from './format-hint';
 
 export class KeyFunc {
-  constructor (...hints) {
+  constructor (..._hints) {
+    const hints = this._handleRest(_hints); // Must be called first
+
     if (hints.length > 1) {
       this._delegateToChildren(hints);
       return;
     }
 
     // Format hint
-    const [hint] = hints;
+    const [hint] = this._handleRest(hints);
     Object.defineProperty(this, 'hint', {
       value: formatHint(hint),
     });
@@ -72,6 +74,27 @@ export class KeyFunc {
     Object.defineProperty(this, 'keyfunc', {
       value: combineFunc(this),
     });
+  }
+
+  _handleRest (_hints) {
+    const hints = [..._hints];
+    const index = hints.findIndex(hint => hint && hint.rest);
+
+    if(index !== -1) {
+      const last = hints.length - 1;
+
+      if (index < last) {
+        throw new Error('Only last hint may have option rest');
+      }
+
+      const hint = Object.assign({}, hints[index],
+        {repeat: true, optional: true});
+      delete hint.rest;
+
+      hints[last] = hint;
+    }
+
+    return hints;
   }
 
   _handleRepeat () {
