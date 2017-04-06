@@ -50,7 +50,7 @@ export const formatOptionSub = (sub, typesuffix, wrap = true) => {
     const arrayHint = {unordered, unique, ntimes};
 
     let elementHints = Object.assign({
-      type: typesuffix || 'object',
+      type: typesuffix || (sub.property ? 'property' : 'object'),
     }, sub);
 
     delete elementHints.unordered;
