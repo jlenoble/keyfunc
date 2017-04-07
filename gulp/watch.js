@@ -13,10 +13,10 @@ export const watch = done => {
 };
 
 export const watchdoc = done => {
-  gulp.watch(docExamplesTestGlob, gulp.series(examples));
+  gulp.watch(docExamplesTestGlob, examples);
   gulp.watch(allDoc, doc);
   done();
 };
 
 gulp.task('watch', watch);
-gulp.task('watchdoc', gulp.parallel(watch, watchdoc));
+gulp.task('watchdoc', gulp.series('test', gulp.parallel(watch, watchdoc)));
