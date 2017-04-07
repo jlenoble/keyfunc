@@ -9,7 +9,7 @@ describe('Testing README.md examples', function () {
     const o1 = {id: 1};
     const o2 = {id: 2};
 
-    okey(o1, o2) !== okey(o2, o1);
-    ukey(o1, o2) === ukey(o2, o1);
+    expect(okey(o1, o2)).not.to.be.equal(okey(o2, o1));
+    expect(okey(o1, o2)).to.be.equal(ukey(o2, o1));
   });
 });
