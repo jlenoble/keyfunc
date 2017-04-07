@@ -8,6 +8,11 @@ import {docGlob, docExamplesTestGlob, buildDir} from './globs';
 
 md.includePattern = /^#include\s"\/?((\w|-)+\/)*(\w|-)+(\.test)?\.md"/gm;
 
+md.reset = function () {
+  md.tableOfContents = '';
+  md.build = {};
+};
+
 md.buildLink = function (title, _anchor) {
   const anchor = _anchor
     .replace(/\W+/g, '-')
@@ -20,6 +25,7 @@ md.buildLink = function (title, _anchor) {
 };
 
 export const doc = () => {
+  md.reset();
   return md.compileFiles(docGlob);
 };
 

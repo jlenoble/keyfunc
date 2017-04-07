@@ -17,6 +17,7 @@ export const srcDir = 'src';
 export const testDir = 'test';
 export const buildDir = 'build';
 export const distDir = 'lib';
+export const docDir = 'docs';
 
 export const apps = ['keyfunc'];
 export const bundleGlob = 'bundle.js';
@@ -31,9 +32,13 @@ export const docExamplesTestGlob = ['docs/examples/**/*.test.js'];
 export const srcBuildGlob = join(buildDir, srcGlob);
 export const testBuildGlob = join(buildDir, testGlob).concat(join(
   buildDir, docExamplesTestGlob));
+export const docExamplesTestMdGlob = join(buildDir,
+  ['docs/examples/**/*.test.md']);
 
 export const allSrcGlob = srcGlob.concat(allTestGlob, docExamplesTestGlob);
 export const allBuildGlob = srcBuildGlob.concat(testBuildGlob);
+export const allDoc = join(docDir, ['**/*.md']).concat(docExamplesTestMdGlob,
+  [docGlob]);
 
 export const bundleRootGlob = join(buildDir, srcDir, 'demo.js');
 export const testBundleRootGlob = join(buildDir, testDir, 'index.test.js');
