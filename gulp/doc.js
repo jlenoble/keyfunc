@@ -3,7 +3,6 @@ import md from 'markdown-include';
 import replace from 'gulp-replace';
 import rename from 'gulp-rename';
 import wrap from 'gulp-wrap';
-import fs from 'fs';
 
 import {docGlob, docExamplesTestGlob, buildDir} from './globs';
 
