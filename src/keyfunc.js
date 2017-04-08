@@ -12,7 +12,7 @@ export class KeyFunc {
     }
 
     // Format hint
-    const [hint] = this._handleRest(hints);
+    const [hint] = hints;
     Object.defineProperty(this, 'hint', {
       value: formatHint(hint),
     });
