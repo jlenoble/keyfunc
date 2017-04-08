@@ -137,3 +137,21 @@ export default function keyfunc (...hints) {
 }
 
 export {optionalKey} from './keyfunc-optional';
+
+export const equiv = (...args) => {
+  const key = keyfunc(...args);
+
+  return (arg1, arg2, ...args) => {
+    const k = key(arg1);
+    let eqv = k === key(arg2);
+
+    if (eqv && args.length !== 0) {
+      args.some(arg => {
+        eqv = eqv && k === key(arg);
+        return !eqv;
+      });
+    }
+
+    return eqv;
+  };
+};
