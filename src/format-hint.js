@@ -102,6 +102,10 @@ export const formatHint = hint => {
       _hint = Object.assign({type: 'property'}, hint);
       break;
     }
+    if (hint.preprocess) { // Shortcut {preprocess: (...args) => {...}}
+      _hint = Object.assign({type: 'literal'}, hint);
+      break;
+    }
   // else FALL THROUGH !
 
   default:

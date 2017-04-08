@@ -25,7 +25,7 @@ const checkArgsLength = (args, {repeat, ntimes}) => {
 };
 
 export default function singleFunc ({
-  type, property, typesuffix, sub,
+  type, property, typesuffix, sub, preprocess,
   optional, repeat, unordered, ntimes, unique,
 }, keyfunc) { // Recursive generation
   let kfnc;
@@ -96,10 +96,12 @@ export default function singleFunc ({
     throw new TypeError(`Unhandled keyfunc type: ${JSON.stringify(type)}`);
   }
 
-  return (...args) => {
+  return (..._args) => {
     if (!kfnc) { // Ok, type 'ignore'
       return;
     }
+
+    const args = preprocess ? [preprocess(..._args)] : _args;
 
     checkArgsLength(args, {repeat, ntimes});
 
