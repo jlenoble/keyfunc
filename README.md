@@ -1,418 +1,573 @@
 # keyfunc
 
+Creates custom functions returning custom keys for any set of args
+
+  * [Background](#background)
   * [Usage](#usage)
-    * [Options](#options)
-  * ['object' vs 'literal' vs 'property'](#object-vs-literal-vs-property)
-    * ['object' option](#object-option)
-    * ['literal' option](#literal-option)
-    * ['property' option](#property-option)
-  * ['array' vs 'set'](#array-vs-set)
-    * ['array' option](#array-option)
-    * ['set' option](#set-option)
-  * [Advanced Usage](#advanced-usage)
-    * [`array:*` and `set:*`](#array-and-set)
-    * [`property:*`](#property)
-    * [Mixed arrays](#mixed-arrays)
-    * [Mixed properties](#mixed-properties)
-    * [Deep properties](#deep-properties)
-    * [Type 'option'](#type-option)
-    * [Unordered lists](#unordered-lists)
+  * [Hints](#hints)
+    * [Hint types](#hint-types)
+      * [Hint type `'object'`](#hint-type-object)
+      * [Hint type `'literal'`](#hint-type-literal)
+      * [Hint type `'property'`](#hint-type-property)
+      * [Hint type `'option'`](#hint-type-option)
+      * [Hint type `'array'`](#hint-type-array)
+      * [Hint type `'set'`](#hint-type-set)
+      * [Hint type `'ignore'`](#hint-type-ignore)
+    * [Hint options](#hint-options)
+      * [Option `'sub'`](#option-sub)
+      * [Option `unordered`](#option-unordered)
+      * [Option `ntimes`](#option-ntimes)
+      * [Option `repeat`](#option-repeat)
+      * [Option `unique`](#option-unique)
+      * [Option `optional`](#option-optional)
+      * [Option `rest`](#option-rest)
+      * [Option `preprocess`](#option-preprocess)
   * [License](#license)
 
 
-Creates custom functions returning custom keys for any set of args
+## Background
+
+*Take `2` and `'1 + 1'`. Are they equal? Maybe.*
+
+*Take `{name: 'Patrick'}` and `{name: Patrick}`. Are they the same? It depends.*
+
+There are two equality operators in *Javascript*, namely `==` and `===`. Both above comparisons yield `false` under both operators. But a glance at both of them and it's easy to convince oneself that in a sense both their terms could be regarded as equivalent to one another in each case. Not programmatically, sure, but maybe in your custom use cases.
+
+*Then you need to write your own comparison functions, again.*
+
+Once you have written a ton of them, always the same, or so slightly different, across many modules, it's now just a pain, especially when their only purpose is to enable unit tests 1000th and 1001th, just for them to be thrown away as usual right afterwards.
+
+`keyfunc` enables you to create a great many custom key functions. As a multi-purpose [key function generator](#usage), it was originally written as the backbone of node module [singletons](https://github.com/jlenoble/singletons).
+
+But to come back to our introducing questions, the key functions created by `keyfunc`'s little brother `equiv` will answer a big YES!
+
+```js
+import {equiv} from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const eq1 = equiv({preprocess: eval});
+const eq2 = equiv({property: 'name'});
+
+expect(eq1(2, '1 + 1')).to.be.true;
+expect(eq1('2 * 3 * 4', '48 / 2', '6 * 6 * 2/3')).to.be.true;
+expect(eq1('2 * 3 * 4', '25', '6 * 6 * 2/3')).to.be.false;
+
+expect(eq2({name: 'Patrick'}, {name: 'Patrick'})).to.be.true;
+expect(eq2({name: 'Patrick'}, {name: 'Patrick'}, {name: 'Patrick'}))
+  .to.be.true;
+expect(eq2({name: 'Patrick'}, {name: 'Patrick'}, {name: 'Patricia'}))
+  .to.be.false;
+```
 
 ## Usage
 
-keyFunc takes at least as many arguments as you will use the generated function with.
+`keyfunc` exports as a default an eponymous factory which takes as arguments a list of *hints*.
 
-Those arguments should hint on the nature of the arguments you will pass to the generated function. Main keywords are 'object', 'literal', 'property', 'array', 'set' and 'ignore' used as in the following example:
+*Hints* are object literals and some expressive string shortcuts specifying what to expect with the corresponding arguments that will be passed to the key function made by the `keyfunc` factory.
 
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
+For example, in `const key = keyfunc('set', 'set')`, `key` is a function that expects two arguments exactly, both *sets*, that is to say unordered arrays of unique (*i.e* appearing only once) of object (*i.e.* equal under the `===` operator) elements, or `key([1,2], [4,5,6,7] === key([2,1], [6,5,4,7]))`.
 
-const key = keyFunc(
-  'object', // First argument must be an object matched strictly
-  'literal', // Second argument can be anything matched literally
-  {property: 'color'}, // Third argument and all subsequent ones can be
-  // anything matched literally from their property 'id' downwards
-  'array', // Fourth argument is an array of 'object'
-  'set', // Fifth argument is a set of 'object'
-  'ignore' // Sixth argument is ignored
-);
+So `keyfunc` has the following signature:
 
-const obj = {id: 1};
-const s1 = key(console, 'log', {color: 'red'}, [console, obj],
-  [console, obj], console);
-const s2 = key(console, 'log', {color: 'red'}, [console, obj],
-  [obj, console], 'dummy');
+`keyfunc([hint1][, hint2][, hint3...]) = [function]`
 
-expect(s1).to.equal(s2);
-```
-### Options
+and the result of calling `keyfunc` has the following signature:
 
-* `stem`: You may use option 'stem' to prepend to your keys a specific string. That helps figuring out what they were generated from. You need to use this option in combination with option 'type' if you want to use also an option type other than 'object' or 'property'.
+`function ([arg1][, arg2][, arg3...]) = [String]`,
 
-* `type`: Default is 'object'; Any option having a property 'property' forces the type to be 'property'. This option helps hint the type when other options are needed simultaneously.
+where `hint1` hints at `arg1`, `hint2` hints at `arg2`, *etc*.
 
-* `rest`: If omitted, the number of arguments of the generated key function is exactly that passed to keyFunc; if true for one argument, then the corresponding key function  will be used for all arguments not hinted in keyFunc; If several rest options are defined, only the first one is taken into account.
+So in order to use `keyfunc`, it is key to understand what hints are made of.
 
-* `unordered`: By default, the arguments passed to the generated key function are strictly ordered. If set to true, then 'unordered' option enforces 'rest: true' and limits keyFunc initialization to one type only so that the generated key function now doesn't enforce ordering any more. See [Unordered lists](#unordered-lists) for an example.
+## Hints
 
-* `sub`: Construct `'array:*'` allows to handle an ordered list of one type, but you often want an ordered list of mixed types. The `sub` option allows to handle this case. See [Mixed arrays](#mixed-arrays) for a discussion on its important use and its difference from a straight call to `keyFunc`. See also See [Mixed properties](#mixed-properties).
+*Hints* are what `keyfunc` expects in order to build any key function.
 
-* `optional`: When true, then an argument is allowed to be missing/undefined. In such a case, a default key is provided so that keyFunc is prevented from throwing an exception.
+### Hint types
+
+*Hints* are first distinguished by types. They are `'object'`, `'literal'`, `'property'`, `'option'`, `'array'`, `'set'` and `'ignore'`.
+
+#### Hint type `'object'`
+
+The `'object'` hint is the default hint, that is to say that if `'keyfunc'` is called without any argument, it is the one that will be used. It is also the default for the elements of arrays when using hints `'array'` and `'set'`.
+
+`'object'` is used when the corresponding argument in the generated key function must be compared using the `===` operator. For functions expecting one argument, or only distinct object arguments,  that type is not very useful, except to maintain the homogeneity of the code structure if many key functions are generated (you could use an `if` statement along with a series of `&&` and `===` operators).
+
+But when the functions expect more than one arguments needing to be compared according to different schemes, it is pretty handy.
 
 ```js
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
 
-const key = keyFunc(
-  {
-    type: 'object',
-  },
-  {
-    type: 'literal',
-  },
-  {
-    property: 'color',
-  },
-  {
-    type: 'array',
-  },
-  {
-    type: 'set',
-  }
-);
+const key1 = keyfunc();
+const key2 = keyfunc('object', 'object');
+const key3 = keyfunc('object', 'object', 'object');
 
-const obj = {id: 1};
-expect(
-  /[0-9a-f]{40}/.test(key(console, 'log', {color: 'red'}, [console, obj],
-      [obj, console]))).to.be.true;
+const obj = {id: 1, name: 'Joe'};
+
+const k1 = key1(String);
+const k2 = key2(Number, console);
+const k3 = key3(Math, obj, obj);
+
+expect(key1(String)).to.equal(k1);
+expect(key1(Number)).not.to.equal(k1);
+
+expect(key2(Number, console)).to.equal(k2);
+expect(key2(console, Number)).not.to.equal(k2);
+expect(key2(obj, console)).not.to.equal(k2);
+
+expect(key3(Math, obj, obj)).to.equal(k3);
+expect(key3(Math, obj, {id: 1, name: 'Joe'})).not.to.equal(k3);
+expect(key3(obj, Math, obj)).not.to.equal(k3);
 ```
 
+#### Hint type `'literal'`
 
-## 'object' vs 'literal' vs 'property'
-
-There are advantages and drawbacks pertaining to each option type. Choose with caution.
-
-### 'object' option
-
-Use this if you know your objects are persistent. When used on intermediary literals, your keys will be only transient. But this option allows for user-friendly (human-readable) keys.
+The `'literal'` hint is used when the corresponding argument in the generated key function will be compared according to its `JSON` representation. It is the least specific of all types. It is also the default used to compare properties when using the type `'property'`.
 
 ```js
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
+import sig from 'sig';
 
-const key = keyFunc('object');
+const key1 = keyfunc('literal');
+const key2 = keyfunc('literal', 'literal');
+const key3 = keyfunc('literal', 'literal', 'literal');
 
-const option1 = {color: 'red'};
+const obj = {id: 1, name: 'Joe'};
 
-const s1 = key(option1);
-const s2 = key({color: 'green'});
-const s3 = key({color: 'blue'});
+const k1 = key1(obj);
+const k2 = key2('John', 'Doe');
+const k3 = key3(42, obj, obj);
 
-expect(s1).not.to.equal(s2);
-expect(s2).not.to.equal(s3);
-expect(s3).not.to.equal(s1);
+expect(key1(obj)).to.equal(k1);
+expect(key1(21)).not.to.equal(k1);
 
-expect(s1).to.equal(key(option1));
-expect(s1).not.to.equal(key({color: 'red'}));
-expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
+expect(key2('John', 'Doe')).to.equal(k2);
+expect(key2('Doe', 'John')).not.to.equal(k2);
+expect(key2('Jane', 'Doe')).not.to.equal(k2);
+
+expect(key3(42, obj, obj)).to.equal(k3);
+expect(key3(42, obj, {id: 1, name: 'Joe'})).to.equal(k3);
+expect(key3('42', obj, obj)).not.to.equal(k3);
 ```
 
-### 'literal' option
+#### Hint type `'property'`
 
-Use this when literal equality is fine. This reduces the number of possible keys, at the expense of key readability.
+The `'property'` hint, like the `'literal'` hint, is used when the corresponding argument in the generated key function will be compared according to a `JSON` representation. The difference lies in that in this case not the whole object is used but only whatever a specific property is set to.
+
+As a string with no further options, this type requires that the property name be appended with a `:`, as in `'property:name'` or `property:length`.
+
+It is actually possible to go much deeper, with constructs such as `'property:client:age'` or `'property:team:player:id'`.
+
+If the property needs to be compared in a more complex way, use [option `'sub'`](#option-sub).
 
 ```js
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
 
-const key = keyFunc('literal');
+const key1 = keyfunc('property:id');
+const key2 = keyfunc('property:id', 'property:name');
+const key3 = keyfunc('property:id', 'property:id', 'property:id');
 
-const option1 = {color: 'red'};
+const obj1 = {id: 1, name: 'Joe'};
+const obj2 = {id: 2, name: 'Jane'};
+const obj3 = {id: 3, name: 'Joyce'};
 
-const s1 = key(option1);
-const s2 = key({color: 'green'});
-const s3 = key({color: 'blue'});
+const k1 = key1(obj1);
+const k2 = key2(obj1, obj2);
+const k3 = key3(obj1, obj2, obj3);
 
-expect(s1).not.to.equal(s2);
-expect(s2).not.to.equal(s3);
-expect(s3).not.to.equal(s1);
+expect(key1(obj1)).to.equal(k1);
+expect(key1(obj2)).not.to.equal(k1);
 
-expect(s1).to.equal(key(option1));
-expect(s1).to.equal(key({color: 'red'}));
-expect(s1).not.to.equal(key({color: 'red', size: 'Huge'}));
+expect(key2(obj1, obj2)).to.equal(k2);
+expect(key2(obj2, obj1)).not.to.equal(k2);
+expect(key2(obj1, {id: 2, name: 'Jane'})).to.equal(k2);
+
+expect(key3(obj1, obj2, obj3)).to.equal(k3);
+expect(key3(obj1, obj3, obj2)).not.to.equal(k3);
+expect(key3({id: 1, name: 'Joe'}, {id: 2, name: 'Jane'},
+  {id: 3, name: 'Joyce'})).to.equal(k3);
 ```
 
-### 'property' option
+#### Hint type `'option'`
 
-Use this when matching on a specific property. This even further reduces the number of generated keys, but now you run the risk of matching pretty unrelated things.
+Unlike the 3 former, the `'option'` hint cannot be used as just a string. It requires that the names of the properties to be considered be specified.
 
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
+Specifying *sub-hints* is done through the option `'sub'`. Types `'array'`, `'set'` and `'property'` may use the construct as well.
 
-const key = keyFunc({property: 'color'});
-
-const option1 = {color: 'red'};
-
-const s1 = key(option1);
-const s2 = key({color: 'green'});
-const s3 = key({color: 'blue'});
-
-expect(s1).not.to.equal(s2);
-expect(s2).not.to.equal(s3);
-expect(s3).not.to.equal(s1);
-
-expect(s1).to.equal(key(option1));
-expect(s1).to.equal(key({color: 'red'}));
-expect(s1).to.equal(key({color: 'red', size: 'Huge'}));
-```
-
-
-## 'array' vs 'set'
-
-When using arrays as arguments, you may either match them simply by using the 'literal' option, or using the 'array' or 'set' options. In the latter case, each element in the list is matched using the 'object' option.
-
-### 'array' option
-
-Use this when matching arrays where order matters and matching literal objects should be considered different.
+The syntax of an `'option'` hint is of the form `{type: 'option', sub: {prop1: type1[, name2: type2][, name3: type3...]}}`. When only one name is specified, one may use alternatively the type `'property'`, though they won't yield the same key function, as the latter only considers whatever is *after* the property name, not the whole `'option'` object.
 
 ```js
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
 
-const key = keyFunc('array');
-
-const option1 = {color: 'red'};
-const option2 = {color: 'green'};
-const option3 = {color: 'blue'};
-
-const s1 = key([option1, option2, option3]);
-const s2 = key([option3, option2, option1]);
-const s3 = key([option1, option2, option3]);
-
-expect(s1).not.to.equal(s2);
-expect(s1).to.equal(s3);
-```
-
-### 'set' option
-
-Use this when matching arrays where order doesn't matter and matching literal objects shoud be considered different.
-
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
-
-const key = keyFunc('set');
-
-const option1 = {color: 'red'};
-const option2 = {color: 'green'};
-const option3 = {color: 'blue'};
-
-const s1 = key([option1, option2, option3]);
-const s2 = key([option3, option2, option1]);
-const s3 = key([option1, option2, option3]);
-
-expect(s1).to.equal(s2);
-expect(s1).to.equal(s3);
-```
-
-
-## Advanced Usage
-
-### `array:*` and `set:*`
-
-By default, options `'array'` and `'set'` define arrays and sets of objects compared with strict equality (`===`). When the comparison can (or should) be relaxed or precised, those options can be extended as such:
-
-* `'array:literal'`: Expects an array of literals (strictly ordered).
-* `'array:property:[propertyName]'`: Expects an array of objects with property 'propertyName' (strictly ordered).
-* `'array:array'`: Expects an array (strictly ordered) of arrays (strictly ordered) of objects (strictly compared).
-* `'array:set'`: Expects an array (strictly ordered) of arrays (unordered) of objects (strictly compared).
-* `'set:literal'`: Expects an array of literals (unordered).
-* `'set:property:[propertyName]'`: Expects an array of objects with property 'propertyName' (unordered).
-* `'set:array'`: Expects an array (unordered) of arrays (strictly ordered) of objects (strictly compared).
-* `'set:set'`: Expects an array (unordered) of arrays (unordered) of objects (strictly compared).
-
-For other element types, you will need to use option 'sub' instead. See [Mixed arrays](#mixed-arrays).
-
-### `property:*`
-
-By default, option `'property'` indicates that objects will be compared with regard to a particular property, specified as an option: `keyFunc({property: 'id'})` for example.
-
-The comparison in such cases will be done literally. But if you want another type of comparison, you may use the following:
-
-* `'property:object'`: Expects property to be an object, strictly compared.
-* `'property:array'`: Expects property to be an array (strictly ordered) of objects (strictly compared).
-* `'property:set'`: Expects property to be an array (unordered) of objects (strictly compared).
-
-For other property types, you will need to use option 'sub' instead. See [Mixed properties](#mixed-properties).
-
-For deep properties, you have the construct `{property: 'a:b:c:...'}`. See [Deep properties](#deep-properties).
-
-### Mixed arrays
-
-With [`array:* and set:*`](#array-and-set), you get collections built from a single type, that is `['object', 'object', ...]` or `['array', 'array', ...]` for example. Using straight `keyFunc`, you can get keys from mixed types to index an object, but you do so one at a time. For example, `(console, 'log')` and `(console, 'error')` can map two singletons using `keyFunc('object', 'literal')` key function. But neither constructs allow to index collections of complex singletons: You can't index one for example with `((console, 'log'), (console, 'error'))` except by using `keyFunc({type: 'literal', rest: true})`. But the latter option results in random side-effects once objects start getting mutated.
-
-Therefore you need deep indexing with option `'sub'`. Syntax resembles that of `keyFunc` but arguments are wrapped in an array.
-
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
-
-const poorKey = keyFunc({type: 'literal', rest: true});
-
-const sharpKey = keyFunc({
-  type: 'array', // Mandatory
-  sub: ['object', 'literal'],
-  rest: true, // Expects a list of mixed arrays, not only a single one
-});
-
-const o1 = {name: 1};
-const o2 = {name: 2};
-const o3 = {name: 3};
-
-const poor = poorKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-const sharp = sharpKey([o1, 'name'], [o2, 'name'], [o3, 'name']);
-
-o1.name = 4;
-
-expect(poor).not.to.equal(poorKey(
-  [o1, 'name'], [o2, 'name'], [o3, 'name']));
-expect(poor).to.equal(poorKey(
-  [{name: 1}, 'name'], [o2, 'name'], [o3, 'name']));
-
-expect(sharp).to.equal(sharpKey(
-  [o1, 'name'], [o2, 'name'], [o3, 'name']));
-expect(sharp).not.to.equal(sharpKey(
-  [{name: 1}, 'name'], [o2, 'name'], [o3, 'name']));
-```
-
-### Mixed properties
-
-With [`property:*`](#property), just like for [`array:* and set:*`](#array-and-set), your properties point to base types like 'object' or 'array'. That is an improvement compared to default 'literal', but you will often want more flexibility and generate keys for arbitrary types.
-
-Just like for 'array', you can use the option 'sub' for that.
-
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
-
-const poorKey = keyFunc({property: 'data', rest: true});
-
-const sharpKey = keyFunc({
-  property: 'data', // Mandatory
-  sub: {type: 'array', sub: ['object', 'literal']},
-  rest: true, // Expects a list of mixed arrays, not only a single one
-});
-
-const o1 = {name: 1};
-const o2 = {name: 2};
-const o3 = {name: 3};
-
-const poor = poorKey({data: [o1, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
-const sharp = sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']});
-
-o1.name = 4;
-
-expect(poor).not.to.equal(poorKey({data: [o1, 'name']},
-  {data: [o2, 'name']}, {data: [o3, 'name']}));
-expect(poor).to.equal(poorKey({data: [{name: 1}, 'name']},
-  {data: [o2, 'name']}, {data: [o3, 'name']}));
-
-expect(sharp).to.equal(sharpKey({data: [o1, 'name']}, {data: [o2, 'name']},
-  {data: [o3, 'name']}));
-expect(sharp).not.to.equal(sharpKey({data: [{name: 1}, 'name']},
-  {data: [o2, 'name']}, {data: [o3, 'name']}));
-```
-
-### Deep properties
-
-Using the syntax of [Mixed properties](#mixed-properties), it's cumbersome to write hints to get to a deep property. But you can refine your declaration of 'property' to create the same key function. See the following example:
-
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
-
-const cumbersomeKey = keyFunc({
-  property: 'humanity',
-  sub: {
-    property: 'man',
-    sub: {
-      property: 'brain',
-      sub: {
-        property: 'thought',
-      },
-    },
-  },
-});
-const straightKey = keyFunc({property: 'humanity:man:brain:thought'});
-
-const o = {humanity: {man: {brain: {thought: 'Duh?'}}}};
-
-expect(cumbersomeKey(o)).to.equal(straightKey(o));
-expect(cumbersomeKey(o)).to.equal(
-  cumbersomeKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
-expect(cumbersomeKey(o)).not.to.equal(
-  cumbersomeKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
-expect(straightKey(o)).to.equal(
-  straightKey({humanity: {man: {brain: {thought: 'Duh?'}}}}));
-expect(straightKey(o)).not.to.equal(
-  straightKey({humanity: {man: {brain: {thought: 'Da!'}}}}));
-```
-
-### Type 'option'
-
-Using the 'property' type may not be enough if one is interested in more than one property to generate a key. Often the 'literal' type will be enough, but again, one may want to ignore some properties, or check a property strictly. The 'option' type solves that by using the option 'sub' to specify what to expect for each relevant properties. The other ones will be ignored.
-
-```js
-import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
-
-const key = keyFunc({
+const key1 = keyfunc({
   type: 'option',
   sub: {
     id: 'literal',
     name: 'literal',
   },
 });
+const key2 = keyfunc({
+  type: 'option',
+  sub: {
+    id: 'literal',
+    name: 'literal',
+  },
+}, {
+  type: 'option',
+  sub: {
+    name: 'literal',
+  },
+});
 
-const option1 = {id: 1, name: 'a', color: 'red'};
-const option2 = {id: 2, name: 'b', color: 'green'};
-const option3 = {id: 1, name: 'a', color: 'blue'};
+const obj1 = {id: 1, name: 'Joe'};
+const obj2 = {id: 2, name: 'Jane'};
+const obj3 = {id: 3, name: 'Joyce'};
 
-const s1 = key(option1);
-const s2 = key(option2);
-const s3 = key(option3);
+const k1 = key1(obj1);
+const k2 = key2(obj1, obj2);
 
-expect(s1).not.to.equal(s2);
-expect(s1).to.equal(s3);
+expect(key1(obj1)).to.equal(k1);
+expect(key1(obj2)).not.to.equal(k1);
+expect(key1({id: 1, name: 'Joe'})).to.equal(k1);
+
+expect(key2(obj1, obj2)).to.equal(k2);
+expect(key2(obj1, obj3)).not.to.equal(k2);
+expect(key2(obj2, obj1)).not.to.equal(k2);
+expect(key2({id: 1, name: 'Joe'}, {name: 'Jane'})).to.equal(k2);
 ```
 
-### Unordered lists
+#### Hint type `'array'`
 
-`keyFunc` generates key functions that, when they accept more than one argument, enforce strict ordering of those arguments. This is due to the fact that by default, arguments don't share their type, and therefore don't share the function that generates their keys.
+The `'array'` hint means that the corresponding argument in the generated key function is an array, that is to say an ordered list of repeatable elements.
 
-But when all arguments have the same type, strict ordering may sometimes be too restrictive. With option 'unordered' provided to the first (and only) argument of `keyFunc`, the limitation is lifted.
+If no options are specified, then the element type is expected to be `'object'`.
+The type can be changed using one or the other special following constructs:
+
+* `'array:type'` as in 'array:literal' or 'array:set'. The elements share then the same type `'literal'` or `'set'` in any number.
+* `{type: 'array', sub: [type1[, type2][, type3...]]}`. The elements have respectively types `type1`, `type2` and 'type3' and are exactly 3.
 
 ```js
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
 
-const okey = keyFunc({type: 'object', rest: true});
-const ukey = keyFunc({type: 'object', unordered: true});
+const key1 = keyfunc('array');
+const key2 = keyfunc('array', 'array');
+const key3 = keyfunc('array', 'array', 'array');
 
-const o1 = {id: 1};
-const o2 = {id: 2};
+const obj1 = {id: 1, name: 'Joe'};
+const obj2 = {id: 2, name: 'Jane'};
+const obj3 = {id: 3, name: 'Joyce'};
 
-okey(o1, o2) !== okey(o2, o1);
-ukey(o1, o2) === ukey(o2, o1);
+const k1 = key1([obj1, obj2, obj3]);
+const k2 = key2([obj1], [obj2, obj3]);
+const k3 = key3([obj1, obj2], [obj2, obj3], [obj3, obj1]);
+
+expect(key1([obj1, obj2, obj3])).to.equal(k1);
+expect(key1([obj1, obj3, obj2])).not.to.equal(k1);
+expect(key1([obj1, obj2])).not.to.equal(k1);
+
+expect(key2([obj1], [obj2, obj3])).to.equal(k2);
+expect(key2([obj2], [obj2, obj3])).not.to.equal(k2);
+expect(key2([obj1], [obj3, obj2])).not.to.equal(k2);
+
+expect(key3([obj1, obj2], [obj2, obj3], [obj3, obj1])).to.equal(k3);
+expect(key3([obj1, obj2], [obj2], [obj3, obj1])).not.to.equal(k3);
+expect(key3([obj3, obj1], [obj2, obj3], [obj1, obj2])).not.to.equal(k3);
 ```
+
+#### Hint type `'set'`
+
+The `'set'` hint means that the corresponding argument in the generated key function is a set, that is to say an unordered list of unique elements.
+
+If no options are specified, then the element type is expected to be `'object'`.
+The type can be changed using one or the other special following constructs:
+
+* `'set:type'` as in 'set:literal' or 'set:set'. The elements share then the same type `'literal'` or `'set'` in any number.
+* `{type: 'set', sub: [type1[, type2][, type3...]]}`. The elements have respectively types `type1`, `type2` and 'type3' and are exactly 3.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc('set');
+const key2 = keyfunc('set', 'set');
+const key3 = keyfunc('set', 'set', 'set');
+
+const obj1 = {id: 1, name: 'Joe'};
+const obj2 = {id: 2, name: 'Jane'};
+const obj3 = {id: 3, name: 'Joyce'};
+
+const k1 = key1([obj1, obj2, obj3]);
+const k2 = key2([obj1], [obj2, obj3]);
+const k3 = key3([obj1, obj2], [obj2, obj3], [obj3, obj1]);
+
+expect(key1([obj1, obj2, obj3])).to.equal(k1);
+expect(key1([obj1, obj3, obj2])).to.equal(k1);
+expect(key1([obj1, obj2])).not.to.equal(k1);
+
+expect(key2([obj1], [obj2, obj3])).to.equal(k2);
+expect(key2([obj2], [obj2, obj3])).not.to.equal(k2);
+expect(key2([obj1], [obj3, obj2])).to.equal(k2);
+
+expect(key3([obj1, obj2], [obj2, obj3], [obj3, obj1])).to.equal(k3);
+expect(key3([obj2, obj1], [obj3, obj2], [obj1, obj3])).to.equal(k3);
+expect(key3([obj1, obj2], [obj2], [obj3, obj1])).not.to.equal(k3);
+expect(key3([obj3, obj1], [obj2, obj3], [obj1, obj2])).not.to.equal(k3);
+```
+
+#### Hint type `'ignore'`
+
+The `'ignore'` hint is used whenever not to take into account a specific argument in the generated key function.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc('object', 'ignore');
+const key2 = keyfunc('object', 'ignore', 'literal');
+const key3 = keyfunc('ignore', 'ignore', 'property:name');
+
+const obj = {id: 1, name: 'Joe'};
+
+const k1 = key1(obj, 'anything');
+const k2 = key2(obj, 'foo', 'bar');
+const k3 = key3(42, 21, obj);
+
+expect(key1(obj, 'anything')).to.equal(k1);
+expect(key1(obj, 'anything else')).to.equal(k1);
+expect(key1({id: 1, name: 'Joe'}, 'anything else')).not.to.equal(k1);
+
+expect(key2(obj, 'foo', 'bar')).to.equal(k2);
+expect(key2(obj, 'quux', 'bar')).to.equal(k2);
+expect(key2(obj, 'foo', 'quux')).not.to.equal(k2);
+
+expect(key3(42, 21, obj)).to.equal(k3);
+expect(key3(obj, obj, obj)).to.equal(k3);
+expect(key3(42, 21, {id: 1, name: 'Jane'})).not.to.equal(k3);
+```
+
+
+### Hint options
+
+On top of its type, a hint may be further specified using several options. In such a case, the hint will take a literal object form instead of being just a string.
+
+Currently possible options are `'ntimes'`, `'optional'`, `'preprocess'`, `'repeat'`, `'rest'`, `'sub'`, `'unique'` and `'unordered'`.
+
+#### Option `'sub'`
+
+It is the most important option, as it allows to mix types in as deep or as wide variations as you require. It applies to types `'array'`, `'set'`, `'property'` and `'option'`, but *sub-hints* can be of any types.
+
+**Constructs:**
+
+* `'array'`: `{type: 'array', sub: [...hints] || {...innerOptions}}`
+* `'set'`: `{type: 'array', sub: [...hints] || {...innerOptions}}`
+* `'property'`: `{type: 'property:propName', sub: hint}`
+* `'option'`: `{type: 'option', sub: {prop1: hint1[, prop2: hint2...]}}`
+
+`innerOptions` is used to specify some properties of arrays/sets, namely if they are ordered or not, unique or not, or a definite number or not (*sub-options* `'unordered'`, `'unique'` and `'ntimes'`).
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc({type: 'array', sub: ['object', 'literal']});
+const key2 = keyfunc({type: 'option', sub: {
+  name: 'literal',
+  elements: {type: 'array', sub: {type: 'literal', unordered: true}},
+}});
+
+const obj = {id: 1, name: 'team', elements: ['Joe', 'Bob', 'Karl']};
+
+const k1 = key1([obj, 'new']);
+const k2 = key2(obj);
+
+expect(key1([obj, 'new'])).to.equal(k1);
+expect(key1([obj, 'old'])).not.to.equal(k1);
+expect(key1([{id: 1, name: 'team'}, 'new'])).not.to.equal(k1);
+
+expect(key2(obj)).to.equal(k2);
+expect(key2({id: 1, name: 'team', elements: [
+  'Karl', 'Bob', 'Joe']})).to.equal(k2);
+expect(key2({id: 1, name: 'team2', elements: [
+  'Joe', 'Bob', 'Karl']})).not.to.equal(k2);
+```
+
+#### Option `unordered`
+
+Used on top level, this option allows to have all arguments use the same hint and makes their order not matter.
+
+Used in combination with types `'array'`, it allows their elements to be unordered (but they already share their *sub-hint*).
+
+Therefore beware of the difference between `{type: 'array', unordered: true}` and `{type: 'array', sub: {unordered: true}}`. Case 1 says that we expect any number of arguments in any order as arrays with their elements ordered, repeatable, in any number, and of type `'object'`. Case 2 says that we expect only one argument as an array with unordered, repeatable elements of type `'object'`.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key = keyfunc({type: 'array', unordered: true});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+const obj3 = {id: 3};
+const obj4 = {id: 4};
+
+const k = key([obj1, obj2], [obj3], [obj4]);
+
+expect(key([obj1, obj2], [obj3], [obj4])).to.equal(k);
+expect(key([obj1, obj2], [obj4], [obj3])).to.equal(k);
+expect(key([obj1, obj2], [obj3], [{id: 4}])).not.to.equal(k);
+expect(key([obj2, obj1], [obj3], [obj4])).not.to.equal(k);
+```
+
+#### Option `ntimes`
+
+Used on top level, this option allows to have several arguments use the same hint `ntimes` number of times.
+
+Used in combination with types `'array'` or `'set'`, it limits their number of elements.
+
+Therefore beware of the difference between `{type: 'array', ntimes: 5}` and `{type: 'array', sub: {ntimes: 5}}`. Case 1 says that we expect 5 arguments as 5 arrays with their elements ordered, repeatable, in any number, and of type `'object'`. Case 2 says that we expect only one argument as an array with 5 ordered, repeatable elements of type `'object'`.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key = keyfunc({type: 'array', ntimes: 3});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+const obj3 = {id: 3};
+const obj4 = {id: 4};
+
+const k = key([obj1, obj2], [obj3], [obj4]);
+
+expect(key([obj1, obj2], [obj3], [obj4])).to.equal(k);
+expect(() => key([obj1, obj2], [obj3])).to.throw();
+expect(key([obj1, obj2], [obj3], [{id: 4}])).not.to.equal(k);
+```
+
+#### Option `repeat`
+
+Option `repeat` allows to have all remaining arguments share the same hint. Only the last hint may have that option.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc({type: 'literal', repeat: true});
+const key2 = keyfunc({type: 'literal'});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+
+expect(key1(obj1)).to.equal(key2(obj1));
+expect(() => key1(obj1, obj2)).not.to.throw();
+expect(() => key2(obj1, obj2)).to.throw();
+```
+
+#### Option `unique`
+
+Used on top level, this option forbids arguments to be identical.
+
+Used in combination with types `'array'`, it forbids the same for their elements.
+
+So with `{type: 'array', unique: true}`, we expect several distinct arrays and with `{type: 'array', sub: {unique: true}}`, we expect one array of distinct elements.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc({type: 'literal', unique: true});
+const key2 = keyfunc({type: 'literal'});
+
+const obj = {id: 1};
+
+expect(key1(obj)).to.equal(key2(obj));
+expect(() => key1(obj, obj)).not.to.throw();
+expect(() => key2(obj, obj)).to.throw();
+expect(key1(obj, obj)).to.equal(key2(obj));
+```
+
+#### Option `optional`
+
+Option `optional` makes an argument (a property when type is `'option'`, an element when type is `'array'` or `'set'`) optional. This is different from using type `'ignore'` which means that the argument will never be considered.
+
+With option `optional`, the argument/property/element is used when present and a filler key is used when not.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key = keyfunc({type: 'array', optional: true});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+const obj3 = {id: 3};
+const obj4 = {id: 4};
+
+const k = key([obj1, obj2]);
+
+expect(key([obj1, obj2])).to.equal(k);
+expect(() => key([obj1, obj2], [obj3, obj4])).to.throw();
+expect(() => key()).not.to.throw();
+```
+
+#### Option `rest`
+
+Option `rest` is a shortcut for options `repeat` + `optional`. The actual difference is that it allows to have no argument at all instead of having at least one.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key1 = keyfunc({type: 'literal', rest: true});
+const key2 = keyfunc({type: 'literal'});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+
+expect(key1(obj1)).not.to.equal(key2(obj1));
+expect(() => key1(obj1, obj2)).not.to.throw();
+expect(() => key2(obj1, obj2)).to.throw();
+expect(() => key1()).not.to.throw();
+expect(() => key2()).to.throw();
+```
+
+#### Option `preprocess`
+
+Option `preprocess` helps with arguments that can take more than one form, as when an 1-array is assimilated to a scalar for example.
+
+The key function you generated with `keyfunc` can't handle complex cases. Sure, you can often use the `JSON` representation (option `'literal'`), but if your argument is expected to be an unordered array or something, it won't work.
+
+Therefore you need to preprocess your arguments to make sure they have the proper signature every time.
+
+Option `preprocess` must be a function that takes as argument whatever will be passed to your key function. It returns the preprocessed argument with the proper signature. For example `arg => Array.isArray(arg) ? arg : [arg]` is a typical preprocessing function.
+
+```js
+import keyfunc from '../../src/keyfunc';
+import {expect} from 'chai';
+
+const key = keyfunc({
+  type: 'literal',
+  preprocess: (func, ...args) => {
+    if (typeof arg === 'function') {
+      return func(...args);
+    } else {
+      return func;
+    }
+  },
+});
+
+function fn (name, id) {
+  return {name, id};
+}
+
+expect(key(fn('Joe', 22))).to.equal(key({name: 'Joe', id: 22}));
+```
+
 
 
 

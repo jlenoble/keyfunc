@@ -1,9 +1,6 @@
-Creates custom functions returning custom keys for any set of args
-
+#include "docs/background.md"
 #include "docs/usage.md"
-#include "docs/object-literal-property.md"
-#include "docs/array-set.md"
-#include "docs/advanced-usage.md"
+#include "docs/hints.md"
 
 ## License !heading
 

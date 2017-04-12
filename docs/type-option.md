@@ -1,5 +1,9 @@
-### Type 'option' !heading
+#### Hint type `'option'` !heading
 
-Using the 'property' type may not be enough if one is interested in more than one property to generate a key. Often the 'literal' type will be enough, but again, one may want to ignore some properties, or check a property strictly. The 'option' type solves that by using the option 'sub' to specify what to expect for each relevant properties. The other ones will be ignored.
+Unlike the 3 former, the `'option'` hint cannot be used as just a string. It requires that the names of the properties to be considered be specified.
+
+Specifying *sub-hints* is done through the option `'sub'`. Types `'array'`, `'set'` and `'property'` may use the construct as well.
+
+The syntax of an `'option'` hint is of the form `{type: 'option', sub: {prop1: type1[, name2: type2][, name3: type3...]}}`. When only one name is specified, one may use alternatively the type `'property'`, though they won't yield the same key function, as the latter only considers whatever is *after* the property name, not the whole `'option'` object.
 
 #include "build/docs/examples/type-option.test.md"

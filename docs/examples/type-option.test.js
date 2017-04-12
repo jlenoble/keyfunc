@@ -1,25 +1,42 @@
+import keyfunc from '../../src/keyfunc';
 import {expect} from 'chai';
-import keyFunc from '../../src/keyfunc';
 
-describe('Testing README.md examples', function () {
-  it(`Type 'option'`, function () {
-    const key = keyFunc({
+describe(`Hint type 'option' example`, function () {
+  it(``, function () {
+    const key1 = keyfunc({
       type: 'option',
       sub: {
         id: 'literal',
         name: 'literal',
       },
     });
+    const key2 = keyfunc({
+      type: 'option',
+      sub: {
+        id: 'literal',
+        name: 'literal',
+      },
+    }, {
+      type: 'option',
+      sub: {
+        name: 'literal',
+      },
+    });
 
-    const option1 = {id: 1, name: 'a', color: 'red'};
-    const option2 = {id: 2, name: 'b', color: 'green'};
-    const option3 = {id: 1, name: 'a', color: 'blue'};
+    const obj1 = {id: 1, name: 'Joe'};
+    const obj2 = {id: 2, name: 'Jane'};
+    const obj3 = {id: 3, name: 'Joyce'};
 
-    const s1 = key(option1);
-    const s2 = key(option2);
-    const s3 = key(option3);
+    const k1 = key1(obj1);
+    const k2 = key2(obj1, obj2);
 
-    expect(s1).not.to.equal(s2);
-    expect(s1).to.equal(s3);
+    expect(key1(obj1)).to.equal(k1);
+    expect(key1(obj2)).not.to.equal(k1);
+    expect(key1({id: 1, name: 'Joe'})).to.equal(k1);
+
+    expect(key2(obj1, obj2)).to.equal(k2);
+    expect(key2(obj1, obj3)).not.to.equal(k2);
+    expect(key2(obj2, obj1)).not.to.equal(k2);
+    expect(key2({id: 1, name: 'Joe'}, {name: 'Jane'})).to.equal(k2);
   });
 });
