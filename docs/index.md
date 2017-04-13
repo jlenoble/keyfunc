@@ -1,6 +1,7 @@
 #include "docs/background.md"
 #include "docs/usage.md"
 #include "docs/hints.md"
+#include "docs/equiv.md"
 
 ## License !heading
 

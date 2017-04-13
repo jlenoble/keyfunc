@@ -22,6 +22,7 @@ Creates custom functions returning custom keys for any set of args
       * [Option `optional`](#option-optional)
       * [Option `rest`](#option-rest)
       * [Option `preprocess`](#option-preprocess)
+  * [`equiv` factory](#equiv-factory)
   * [License](#license)
 
 
@@ -548,6 +549,26 @@ key(fn('Joe', 22)) === key({name: 'Joe', id: 22});
 ```
 
 
+
+## `equiv` factory
+
+`equiv` takes advantage of `keyfunc`'s unique key generation schemes to create custom comparison functions.
+
+`equiv` recieves the same hints as `keyfunc` and uses it underneath. The comparator it generates returns `true` or `false` depending on whether key strings are equal or not.
+
+```js
+import keyfunc, {equiv} from 'keyfunc';
+
+const eq = equiv({type: 'set', sub: {ntimes: 3}});
+const key = keyfunc({type: 'set', sub: {ntimes: 3}});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+const obj3 = {id: 3};
+
+eq([obj1, obj2, obj3], [obj3, obj2, obj1]); // true;
+key([obj1, obj2, obj3]) === key([obj3, obj2, obj1]);
+```
 
 
 ## License
