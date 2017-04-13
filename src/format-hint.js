@@ -46,8 +46,16 @@ export const formatOptionSub = (sub, typesuffix, wrap = true) => {
         sub} and typesuffix:${typesuffix}`);
     }
 
-    const {unordered, unique, ntimes} = sub;
-    const arrayHint = {unordered, unique, ntimes};
+    const arrayHint = {};
+    if (sub.unordered !== undefined) {
+      arrayHint.unordered = sub.unordered;
+    }
+    if (sub.unique !== undefined) {
+      arrayHint.unique = sub.unique;
+    }
+    if (sub.ntimes !== undefined) {
+      arrayHint.ntimes = sub.ntimes;
+    }
 
     let elementHints = Object.assign({
       type: typesuffix || (sub.property ? 'property' : 'object'),
