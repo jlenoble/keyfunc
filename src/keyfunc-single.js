@@ -31,7 +31,7 @@ export default function singleFunc ({
   let kfnc;
 
   if (optional) {
-    return optionalFunc(keyfunc({type, property, typesuffix, sub}),
+    return optionalFunc(singleFunc({type, property, typesuffix, sub}, keyfunc),
       {ntimes, repeat, unordered, unique});
   }
 

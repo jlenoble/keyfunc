@@ -136,4 +136,49 @@ describe(`Testing option optional`, function () {
     expect(() => key(o1, o2, o3, o4, o5, o6, o7)).to.throw(
       `Inconsistent number of arguments, can't generate key`);
   });
+
+  it(`option optional on type set:set (bugfix)`, function () {
+    class Class {
+      constructor (name) {
+        this.name = name;
+      }
+    }
+
+    const key = keyfunc('array:literal', {property: 'name'},
+      {type: 'set:set', optional: true});
+    const ref = keyfunc('array:literal', {property: 'name'},
+      {type: 'set:set'});
+
+    const c1 = new Class('Adele');
+    const c2 = new Class('Bea');
+    const c3 = new Class('Cecil');
+
+    const s1 = key(
+      [c1, c2, c3],
+      c3,
+      [[c1], [c2, c3]]
+    );
+    const s0 = ref(
+      [c1, c2, c3],
+      c3,
+      [[c1], [c2, c3]]
+    );
+
+    expect(s0).to.equal(ref(
+      [c1, c2, c3],
+      c3,
+      [[c1], [c2, c3]]
+    ));
+
+    expect(s1).to.equal(key(
+      [c1, c2, c3],
+      c3,
+      [[c1], [c2, c3]]
+    ));
+    expect(s1).to.equal(key(
+      [c1, {name: 'Bea'}, c3],
+      {name: 'Cecil'},
+      [[c1], [c3, c2]]
+    ));
+  });
 });
