@@ -6,7 +6,7 @@ describe(`Hint option 'preprocess' example`, function () {
     const key = keyfunc({
       type: 'literal',
       preprocess: (func, ...args) => {
-        if (typeof arg === 'function') {
+        if (typeof func === 'function') {
           return func(...args);
         } else {
           return func;
@@ -18,6 +18,6 @@ describe(`Hint option 'preprocess' example`, function () {
       return {name, id};
     }
 
-    expect(key(fn('Joe', 22))).to.equal(key({name: 'Joe', id: 22}));
+    expect(key(fn, 'Joe', 22)).to.equal(key({name: 'Joe', id: 22}));
   });
 });
