@@ -533,7 +533,7 @@ import keyfunc from 'keyfunc';
 const key = keyfunc({
   type: 'literal',
   preprocess: (func, ...args) => {
-    if (typeof arg === 'function') {
+    if (typeof func === 'function') {
       return func(...args);
     } else {
       return func;
@@ -545,7 +545,7 @@ function fn (name, id) {
   return {name, id};
 }
 
-key(fn('Joe', 22)) === key({name: 'Joe', id: 22});
+key(fn, 'Joe', 22) === key({name: 'Joe', id: 22});
 ```
 
 
