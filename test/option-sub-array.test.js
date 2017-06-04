@@ -228,4 +228,27 @@ describe('Backward compatibility with v0.8.2', function () {
       ]));
     });
   });
+
+  it(`Calling keyFunc({type: 'set', sub: {
+        type: 'array',
+        sub: ['literal', 'literal'],
+      }})`, function () {
+    const key = keyfunc({type: 'set', sub: {
+      type: 'array',
+      sub: ['literal', 'literal'],
+    }});
+
+    const k1 = key([['David', 'Grey'], ['Philip', 'Strong'], ['Al',
+      'Short'], ['Patrick', 'Barnes']]);
+    const k2 = key([['David', 'Grey'], ['Philip', 'Strong'], ['Al',
+      'Short'], ['Patrick', 'Barnes']]);
+    const k3 = key([['Philip', 'Strong'], ['Al', 'Short'],
+      ['David', 'Grey'], ['Patrick', 'Barnes']]);
+    const k4 = key([['Philip', 'Strong'], ['Al', 'Short'], ['Al', 'Short'],
+      ['David', 'Grey'], ['Patrick', 'Barnes'], ['Al', 'Short']]);
+
+    expect(k1).to.equal(k2);
+    expect(k1).to.equal(k3);
+    expect(k1).to.equal(k4);
+  });
 });
