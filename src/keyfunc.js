@@ -80,7 +80,7 @@ export class KeyFunc {
     const hints = [..._hints];
     const index = hints.findIndex(hint => hint && hint.rest);
 
-    if(index !== -1) {
+    if (index !== -1) {
       const last = hints.length - 1;
 
       if (index < last) {
@@ -100,7 +100,7 @@ export class KeyFunc {
   _handleRepeat () {
     const last = this.hints.length - 1;
     let nth;
-    if(this.hints.some((hint, i) => {
+    if (this.hints.some((hint, i) => {
       nth = i;
       return hint.repeat && hint.ntimes === undefined;
     }) && nth !== last) {
@@ -108,10 +108,17 @@ export class KeyFunc {
     }
 
     // Deal with possible infinite args
+    const lastHint = this.hints[last];
     Object.defineProperty(this, 'unbound', {
-      value: this.hints[last].repeat && nth === last &&
-        this.hints[last].ntimes === undefined,
+      value: lastHint.repeat && nth === last &&
+        lastHint.ntimes === undefined,
     });
+
+    if (this.unbound && lastHint.type === 'ignore') {
+      lastHint.optional = true; // Hack to prevent a counting error when
+      // combining keyFuncs: For 'ignore' type, 'repeat' should be
+      // indistinguishable from 'rest' option
+    }
   }
 
   _handleOptional () {

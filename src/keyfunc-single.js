@@ -30,7 +30,7 @@ export default function singleFunc ({
 }, keyfunc) { // Recursive generation
   let kfnc;
 
-  if (optional) {
+  if (optional && type !== 'ignore') {
     return optionalFunc(singleFunc({type, property, typesuffix, sub}, keyfunc),
       {ntimes, repeat, unordered, unique});
   }
