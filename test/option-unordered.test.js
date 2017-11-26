@@ -3,8 +3,7 @@ import {expect} from 'chai';
 import keyfunc from '../src/keyfunc';
 
 describe(`Testing option unordered`, function () {
-  it(`Single hint type`,
-  function () {
+  it(`Single hint type`, function () {
     const key = keyfunc({type: 'object', unordered: true});
 
     const o1 = {id: 1};
@@ -16,8 +15,7 @@ describe(`Testing option unordered`, function () {
     expect(key(o1, o2, o3)).to.equal(sig('o1o2o3'));
   });
 
-  it(`Option combined with option ntimes`,
-  function () {
+  it(`Option combined with option ntimes`, function () {
     const key = keyfunc({type: 'object', unordered: true, ntimes: 3});
 
     const o1 = {id: 1};

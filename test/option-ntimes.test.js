@@ -3,8 +3,7 @@ import {expect} from 'chai';
 import keyfunc from '../src/keyfunc';
 
 describe(`Testing option ntimes`, function () {
-  it(`Single hint`,
-  function () {
+  it(`Single hint`, function () {
     const key1 = keyfunc({type: 'object', ntimes: 5});
     const key2 = keyfunc('object', 'object', 'object', 'object', 'object');
 
@@ -53,8 +52,7 @@ describe(`Testing option ntimes`, function () {
     expect(key1(o1, o2, o3, o4, o5)).not.to.equal(key2(o1, o2, o3, o4, o5));
   });
 
-  it(`Single hint as type 'array'`,
-  function () {
+  it(`Single hint as type 'array'`, function () {
     const key1 = keyfunc({
       type: 'array',
       sub: {

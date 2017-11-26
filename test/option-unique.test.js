@@ -2,8 +2,7 @@ import {expect} from 'chai';
 import keyfunc from '../src/keyfunc';
 
 describe(`Testing option unique`, function () {
-  it(`Single hint type`,
-  function () {
+  it(`Single hint type`, function () {
     const key = keyfunc({type: 'object', unique: true});
 
     const o1 = {id: 1};

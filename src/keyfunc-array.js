@@ -3,7 +3,7 @@ import objectFunc from './keyfunc-object';
 import removeDuplicates from './remove-duplicates';
 
 export default function arrayFunc (elementKeyfunc = objectFunc(),
-options = {}) {
+  options = {}) {
   const {unordered, unique, ntimes, spread} = options;
 
   // used to be array => sig(array.map(elementKeyfunc))
@@ -38,7 +38,7 @@ options = {}) {
     } catch (e) {
       if (e.message.match(/arr.map is not a function/)) {
         throw new TypeError(`Function can only generate keys for ${unique ?
-        'sets' : 'arrays'}, but argument was: ${JSON.stringify(array)}`);
+          'sets' : 'arrays'}, but argument was: ${JSON.stringify(array)}`);
       }
       throw e;
     }

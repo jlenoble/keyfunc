@@ -122,78 +122,78 @@ describe(`Testing 'property' hint`, function () {
     const signature = sig;
 
     it(`Calling keyFunc({type: 'property:object', property: 'id'})`,
-    function () {
-      const key = keyFunc({
-        type: 'property:object',
-        property: 'id',
-      });
+      function () {
+        const key = keyFunc({
+          type: 'property:object',
+          property: 'id',
+        });
 
-      const o = {name: 'Amy'};
-      const obj = {id: o};
-      expect(key(obj)).to.equal(key(obj));
-      expect(key(obj)).to.equal(key({id: o}));
-      expect(key(obj)).not.to.equal(key({id: {name: 'Amy'}}));
-      expect(key(obj)).to.equal('o1');
-    });
+        const o = {name: 'Amy'};
+        const obj = {id: o};
+        expect(key(obj)).to.equal(key(obj));
+        expect(key(obj)).to.equal(key({id: o}));
+        expect(key(obj)).not.to.equal(key({id: {name: 'Amy'}}));
+        expect(key(obj)).to.equal('o1');
+      });
 
     it(`Calling keyFunc({type: 'property:literal', property: 'id'})`,
-    function () {
-      const key = keyFunc({
-        type: 'property:literal',
-        property: 'id',
-      });
+      function () {
+        const key = keyFunc({
+          type: 'property:literal',
+          property: 'id',
+        });
 
-      const o = {name: 'Amy'};
-      const obj = {id: o};
-      expect(key(obj)).to.equal(key(obj));
-      expect(key(obj)).to.equal(key({id: o}));
-      expect(key(obj)).to.equal(key({id: {name: 'Amy'}}));
-    });
+        const o = {name: 'Amy'};
+        const obj = {id: o};
+        expect(key(obj)).to.equal(key(obj));
+        expect(key(obj)).to.equal(key({id: o}));
+        expect(key(obj)).to.equal(key({id: {name: 'Amy'}}));
+      });
 
     it(`Calling keyFunc({type: 'property:property:id', property: 'data'})`,
-    function () {
-      const key = keyFunc({
-        type: 'property:property:id',
-        property: 'data',
-      });
+      function () {
+        const key = keyFunc({
+          type: 'property:property:id',
+          property: 'data',
+        });
 
-      const obj = {data: {id: 1}};
-      expect(key(obj)).to.equal(key(obj));
-      expect(key(obj)).to.equal(key({data: {id: 1}}));
-      expect(key(obj)).to.equal(signature(1));
-    });
+        const obj = {data: {id: 1}};
+        expect(key(obj)).to.equal(key(obj));
+        expect(key(obj)).to.equal(key({data: {id: 1}}));
+        expect(key(obj)).to.equal(signature(1));
+      });
 
     it(`Calling keyFunc({type: 'property:property:id:id', property: 'data'})`,
-    function () {
-      const key = keyFunc({
-        type: 'property:property:id:id',
-        property: 'data',
-      });
+      function () {
+        const key = keyFunc({
+          type: 'property:property:id:id',
+          property: 'data',
+        });
 
-      const obj = {data: {id: {id: 1}}};
-      expect(key(obj)).to.equal(key(obj));
-      expect(key(obj)).to.equal(key({data: {id: {id: 1}}}));
-      expect(key(obj)).not.to.equal(signature({id: 1}));
-      expect(key(obj)).to.equal(signature(1));
-    });
+        const obj = {data: {id: {id: 1}}};
+        expect(key(obj)).to.equal(key(obj));
+        expect(key(obj)).to.equal(key({data: {id: {id: 1}}}));
+        expect(key(obj)).not.to.equal(signature({id: 1}));
+        expect(key(obj)).to.equal(signature(1));
+      });
 
     it(`Calling keyFunc({type: 'property:array', property: 'id'})`,
-    function () {
-      const key = keyFunc({
-        type: 'property:array',
-        property: 'id',
-      });
+      function () {
+        const key = keyFunc({
+          type: 'property:array',
+          property: 'id',
+        });
 
-      const o = {name: 'Amy'};
-      const o2 = {name: 'Brice'};
-      const obj = {id: [o, o2]};
-      expect(key(obj)).to.equal(key(obj));
-      expect(key(obj)).to.equal(key({id: [o, o2]}));
-      expect(key(obj)).not.to.equal(key({id: [o2, o]}));
-      expect(key(obj)).not.to.equal(key({id: [{name: 'Amy'},
-        {name: 'Brice'}]}));
-      expect(key(obj)).to.equal(signature(['o1', 'o2']));
-    });
+        const o = {name: 'Amy'};
+        const o2 = {name: 'Brice'};
+        const obj = {id: [o, o2]};
+        expect(key(obj)).to.equal(key(obj));
+        expect(key(obj)).to.equal(key({id: [o, o2]}));
+        expect(key(obj)).not.to.equal(key({id: [o2, o]}));
+        expect(key(obj)).not.to.equal(key({id: [{name: 'Amy'},
+          {name: 'Brice'}]}));
+        expect(key(obj)).to.equal(signature(['o1', 'o2']));
+      });
 
     it(`Calling keyFunc({type: 'property:set', property: 'id'})`, function () {
       const key = keyFunc({
