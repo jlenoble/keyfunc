@@ -162,3 +162,12 @@ export const equiv = (...args) => {
     return eqv;
   };
 };
+
+export const unequiv = (...args) => {
+  const key = keyfunc(...args);
+
+  return (...args) => {
+    const set = new Set(args.map(arg => key(arg)));
+    return set.size === args.length;
+  };
+};
