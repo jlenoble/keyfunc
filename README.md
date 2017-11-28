@@ -23,6 +23,7 @@ Creates custom functions returning custom keys for any set of args
       * [Option `rest`](#option-rest)
       * [Option `preprocess`](#option-preprocess)
   * [`equiv` factory](#equiv-factory)
+  * [`unequiv` factory](#unequiv-factory)
   * [License](#license)
 
 
@@ -557,17 +558,73 @@ key(fn, 'Joe', 22) === key({name: 'Joe', id: 22});
 `equiv` recieves the same hints as `keyfunc` and uses it underneath. The comparator it generates returns `true` or `false` depending on whether key strings are equal or not.
 
 ```js
-import keyfunc, {equiv} from 'keyfunc';
+import {equiv} from 'keyfunc';
 
 const eq = equiv({type: 'set', sub: {ntimes: 3}});
-const key = keyfunc({type: 'set', sub: {ntimes: 3}});
 
 const obj1 = {id: 1};
 const obj2 = {id: 2};
 const obj3 = {id: 3};
+const obj4 = {id: 3};
 
-eq([obj1, obj2, obj3], [obj3, obj2, obj1]); // true;
-key([obj1, obj2, obj3]) === key([obj3, obj2, obj1]);
+expect(eq(
+  [obj1, obj2, obj3],
+  [obj1, obj3, obj2],
+  [obj2, obj1, obj3],
+  [obj2, obj3, obj1],
+  [obj3, obj1, obj2],
+  [obj3, obj2, obj1]
+)).to.be.true;
+
+expect(eq(
+  [obj1, obj2, obj3],
+  [obj1, obj2, obj4]
+)).to.be.false;
+
+expect(eq(
+  [obj1, obj2, obj3],
+  [obj1, obj3, obj2],
+  [obj2, obj1, obj3],
+  [obj2, obj4, obj1], // mismatch here
+  [obj3, obj1, obj2],
+  [obj3, obj2, obj1]
+)).to.be.false;
+```
+
+## `unequiv` factory
+
+`unequiv` is *not* the negation of `equiv`.
+
+Like `equiv`, `unequiv` takes advantage of `keyfunc`'s unique key generation schemes to create custom comparison functions.
+
+Like `equiv`, `unequiv` recieves the same hints as `keyfunc` and uses it underneath.
+
+But `unequiv`'s truth requires that all arguments be different from *all* the other arguments. (Negating `equiv` requires only that *one* be different).
+
+```js
+import {unequiv} from 'keyfunc';
+
+const uneq = unequiv({type: 'set', sub: {ntimes: 3}});
+
+const obj1 = {id: 1};
+const obj2 = {id: 2};
+const obj3 = {id: 3};
+const obj4 = {id: 3};
+
+expect(uneq(
+  [obj1, obj2, obj3],
+  [obj1, obj2, obj4],
+  [obj1, obj3, obj4],
+  [obj2, obj3, obj4]
+)).to.be.true;
+
+expect(uneq(
+  [obj1, obj2, obj3],
+  [obj1, obj2, obj4],
+  [obj4, obj3, obj2], // Same set as last
+  [obj1, obj3, obj4],
+  [obj2, obj3, obj4]
+)).to.be.false;
 ```
 
 

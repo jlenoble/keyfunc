@@ -2,6 +2,7 @@
 #include "docs/usage.md"
 #include "docs/hints.md"
 #include "docs/equiv.md"
+#include "docs/unequiv.md"
 
 ## License !heading
 
