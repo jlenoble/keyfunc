@@ -9,7 +9,7 @@ export const formatOptionNTimes = ({ntimes}) => {
     throw new TypeError(`Not a number: ${JSON.stringify(ntimes)}`);
   }
 
-  let _ntimes = parseInt(ntimes, 10);
+  const _ntimes = parseInt(ntimes, 10);
 
   if (ntimes === 1) {
     return; // Useless option
@@ -76,7 +76,7 @@ export const formatOptionSub = (sub, typesuffix, wrap = true) => {
 };
 
 export const splitHint = _hint => {
-  let [hint, ...hints] = _hint.split(':');
+  const [hint, ...hints] = _hint.split(':');
   return {
     type: hint, typesuffix: hints.join(':'),
   };
@@ -114,7 +114,7 @@ export const formatHint = hint => {
       _hint = Object.assign({type: 'literal'}, hint);
       break;
     }
-  // else FALL THROUGH !
+    // else FALL THROUGH !
 
   default:
     throw new TypeError(`Unhandled keyfunc hint: ${JSON.stringify(hint)}`);
